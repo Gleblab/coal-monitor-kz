@@ -191,7 +191,9 @@ function compactLocalityLabel(raw) {
   let label = firstLine.replace(/^г\.\s*/i, '').replace(/^станция\s+/i, '').trim()
   label = label.replace(/[,\s]+[А-ЯЁа-яё-]+\s+район$/i, '').trim()
   label = label.replace(/[,\s]+[А-ЯЁа-яё-]+\s+область$/i, '').trim()
-  return label.replace(/[.,;]+$/g, '').trim() || firstLine
+  label = label.replace(/[.,;]+$/g, '').trim() || firstLine
+  if (/усть-каменогорск/i.test(label)) return 'Усть-Кам.'
+  return label
 }
 
 function useCompactRetailGeoChart() {
