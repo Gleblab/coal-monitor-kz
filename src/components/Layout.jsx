@@ -330,14 +330,6 @@ export function Layout({ children }) {
           <div className="topbar-nav">
             <button
               type="button"
-              className="nav-icon-btn topbar-back"
-              aria-label="Назад"
-              onClick={goBack}
-            >
-              <span aria-hidden="true">←</span>
-            </button>
-            <button
-              type="button"
               className="nav-icon-btn topbar-menu"
               aria-label={navOpen ? 'Закрыть меню' : 'Открыть меню'}
               aria-expanded={navOpen}
@@ -345,6 +337,14 @@ export function Layout({ children }) {
               onClick={() => setNavOpen((open) => !open)}
             >
               <span aria-hidden="true">{navOpen ? '×' : '☰'}</span>
+            </button>
+            <button
+              type="button"
+              className="nav-icon-btn topbar-back"
+              aria-label="Назад"
+              onClick={goBack}
+            >
+              <span aria-hidden="true">←</span>
             </button>
           </div>
           <div className="topbar-status">

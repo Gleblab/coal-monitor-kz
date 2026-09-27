@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   CartesianGrid,
   Legend,
@@ -183,19 +184,45 @@ function wrapTick(label, width = 18) {
   return lines.slice(0, 3)
 }
 
-function GeoYTick({ x, y, payload }) {
-  const lines = wrapTick(payload?.value)
-  const offset = ((lines.length - 1) * 11) / 2
+function compactLocalityLabel(raw) {
+  const text = String(raw || '').trim()
+  if (!text) return ''
+  const firstLine = text.split(/\n/)[0].replace(/\s+/g, ' ').trim()
+  let label = firstLine.replace(/^г\.\s*/i, '').replace(/^станция\s+/i, '').trim()
+  label = label.replace(/[,\s]+[А-ЯЁа-яё-]+\s+район$/i, '').trim()
+  label = label.replace(/[,\s]+[А-ЯЁа-яё-]+\s+область$/i, '').trim()
+  return label.replace(/[.,;]+$/g, '').trim() || firstLine
+}
+
+function useCompactRetailGeoChart() {
+  const [compact, setCompact] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 430px)').matches : false,
+  )
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 430px)')
+    const sync = () => setCompact(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
+  return compact
+}
+
+function GeoYTick({ x, y, payload, compact }) {
+  const source = String(payload?.value || '')
+  const display = compact ? compactLocalityLabel(source) : source
+  const lines = wrapTick(display, compact ? 16 : 18)
+  const offset = ((lines.length - 1) * 12) / 2
   return (
     <g transform={`translate(${x},${y})`}>
       {lines.map((line, index) => (
         <text
           key={line}
-          x={-6}
-          y={index * 11 - offset + 3}
+          x={compact ? -4 : -6}
+          y={index * 12 - offset + 3}
           textAnchor="end"
           fill="#8b9bb3"
-          fontSize={11}
+          fontSize={compact ? 12 : 11}
         >
           {line}
         </text>
@@ -226,21 +253,31 @@ function GeoTooltip({ active, payload }) {
 }
 
 export function RetailGeoPlot({ points }) {
+  const compact = useCompactRetailGeoChart()
   const localities = [...new Set(points.map((item) => item.locality))]
   const brands = [...new Set(points.map((item) => item.brand))]
-  const height = Math.min(400, Math.max(280, localities.length * 58 + 56))
+  const height = compact
+    ? Math.min(460, Math.max(340, localities.length * 72 + 88))
+    : Math.min(400, Math.max(280, localities.length * 58 + 56))
   return (
     <div className="chart-box retail-chart retail-geo-chart" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart margin={{ top: 8, right: 12, left: 4, bottom: 8 }}>
+        <ScatterChart
+          margin={
+            compact
+              ? { top: 8, right: 8, left: 0, bottom: 28 }
+              : { top: 8, right: 12, left: 4, bottom: 8 }
+          }
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
           <XAxis
             type="number"
             dataKey="price"
             name="Цена"
             stroke="#7d8ca3"
-            tick={{ fill: '#7d8ca3', fontSize: 11 }}
+            tick={{ fill: '#7d8ca3', fontSize: compact ? 11 : 11 }}
             tickFormatter={(value) => formatKzt(Number(value))}
+            padding={{ left: compact ? 8 : 0, right: compact ? 8 : 0 }}
           />
           <YAxis
             type="category"
@@ -248,13 +285,20 @@ export function RetailGeoPlot({ points }) {
             data={localities.map((locality) => ({ locality }))}
             allowDuplicatedCategory={false}
             interval={0}
-            width={158}
+            width={compact ? 92 : 158}
             stroke="#7d8ca3"
-            tick={<GeoYTick />}
+            tick={(props) => <GeoYTick {...props} compact={compact} />}
           />
           <ZAxis range={[60, 60]} />
           <Tooltip content={<GeoTooltip />} contentStyle={chartTooltipStyle} cursor={{ stroke: 'rgba(255,255,255,0.12)' }} />
-          <Legend wrapperStyle={{ fontSize: 12, color: '#8b9bb3' }} />
+          <Legend
+            wrapperStyle={{
+              fontSize: 12,
+              color: '#8b9bb3',
+              width: '100%',
+              paddingTop: compact ? 4 : 0,
+            }}
+          />
           {brands.map((brand) => (
             <Scatter
               key={brand}
