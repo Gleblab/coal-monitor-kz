@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useId, useState } from 'react'
 import { getFiltersMeta } from '../api/marketApi'
 import { useAuth } from '../context/AuthContext'
@@ -135,7 +135,7 @@ function Sidebar({ open, drawerId, onClose, inertMobile, onOpenLogin }) {
           onClick={onClose}
           aria-label="Закрыть меню"
         >
-          Закрыть
+          <span aria-hidden="true">×</span>
         </button>
       </div>
       <SidebarNav onNavigate={onClose} />
@@ -228,6 +228,11 @@ function FilterBar({ children }) {
   )
 }
 
+function canGoBackInApp() {
+  const idx = window.history.state?.idx
+  return typeof idx === 'number' ? idx > 0 : false
+}
+
 export function Layout({ children }) {
   const { authNeed, clearAuthNeed, cancelPending } = useWatchlist()
   const [navOpen, setNavOpen] = useState(false)
@@ -237,7 +242,16 @@ export function Layout({ children }) {
   const [resumeList, setResumeList] = useState(false)
   const [authIntent, setAuthIntent] = useState(null)
   const location = useLocation()
+  const navigate = useNavigate()
   const drawerId = useId()
+
+  function goBack() {
+    if (canGoBackInApp()) {
+      navigate(-1)
+      return
+    }
+    if (location.pathname !== '/') navigate('/')
+  }
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 1100px)')
@@ -283,16 +297,6 @@ export function Layout({ children }) {
   return (
     <div className={`app-shell${navOpen ? ' is-nav-open' : ''}`}>
       <header className="mobile-bar">
-        <button
-          type="button"
-          className="nav-icon-btn"
-          aria-label={navOpen ? 'Закрыть меню' : 'Открыть меню'}
-          aria-expanded={navOpen}
-          aria-controls={drawerId}
-          onClick={() => setNavOpen((open) => !open)}
-        >
-          <span aria-hidden="true">{navOpen ? '✕' : '☰'}</span>
-        </button>
         <p className="mobile-bar-title">Coal Monitor KZ</p>
         <AccountControl
           placement="mobile"
@@ -323,6 +327,26 @@ export function Layout({ children }) {
           <span>Республика Казахстан · официальные публикации</span>
         </div>
         <header className="topbar">
+          <div className="topbar-nav">
+            <button
+              type="button"
+              className="nav-icon-btn topbar-back"
+              aria-label="Назад"
+              onClick={goBack}
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+            <button
+              type="button"
+              className="nav-icon-btn topbar-menu"
+              aria-label={navOpen ? 'Закрыть меню' : 'Открыть меню'}
+              aria-expanded={navOpen}
+              aria-controls={drawerId}
+              onClick={() => setNavOpen((open) => !open)}
+            >
+              <span aria-hidden="true">{navOpen ? '×' : '☰'}</span>
+            </button>
+          </div>
           <div className="topbar-status">
             <div className="topbar-tools">
               <MarketSearchButton />

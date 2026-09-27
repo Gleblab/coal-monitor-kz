@@ -175,7 +175,17 @@ export function MarketSearchPalette() {
         onKeyDown={onDialogKeyDown}
       >
         <header className="market-search-head">
-          <h2 id={titleId}>Поиск по Coal Monitor KZ</h2>
+          <div className="market-search-head-row">
+            <h2 id={titleId}>Поиск по Coal Monitor KZ</h2>
+            <button
+              type="button"
+              className="market-search-close"
+              aria-label="Закрыть поиск"
+              onClick={requestClose}
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
           <input
             id={inputId}
             ref={inputRef}

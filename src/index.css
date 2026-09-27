@@ -211,6 +211,10 @@ input {
   border-bottom: 1px solid var(--line);
 }
 
+.topbar-nav {
+  display: none;
+}
+
 .topbar-status {
   display: flex;
   align-items: center;
@@ -3323,7 +3327,8 @@ a.cmd-text-btn {
     min-width: 44px;
     min-height: 44px;
     margin-top: 2px;
-    font-size: 12px;
+    font-size: 22px;
+    line-height: 1;
     pointer-events: auto;
   }
 
@@ -3368,9 +3373,18 @@ a.cmd-text-btn {
   }
 
   .topbar {
-    justify-content: flex-end;
-    padding-top: 8px;
+    justify-content: space-between;
+    gap: 6px;
+    padding-top: calc(8px + env(safe-area-inset-top, 0px));
     padding-bottom: 8px;
+  }
+
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+    min-width: 0;
   }
 
   .topbar-status-label {
@@ -7151,14 +7165,41 @@ a.retail-astana-slice-id:hover {
 }
 
 .market-search-head {
-  padding: 16px 16px 12px;
+  padding: 12px 12px 12px 16px;
   border-bottom: 1px solid var(--line);
 }
 
+.market-search-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
 .market-search-head h2 {
-  margin: 0 0 10px;
+  margin: 0;
+  min-width: 0;
   font-size: 14px;
   font-weight: 600;
+}
+
+.market-search-close {
+  appearance: none;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #0c1420;
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .market-search-input {
@@ -7268,11 +7309,17 @@ a.retail-astana-slice-id:hover {
   }
 
   .topbar-status {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 }
 
 @media (max-width: 420px) {
+  .topbar {
+    gap: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
   .topbar-tools {
     gap: 4px;
   }
