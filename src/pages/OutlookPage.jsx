@@ -4,7 +4,8 @@ import { useSources } from '../context/SourceContext'
 import { TargetMonitor } from '../components/intelligence/TargetMonitor'
 import { MetricTraceButton } from '../components/traceability/MetricTraceButton'
 import { LoadErrorState, NoData, PageHeader, StateBlock, StatusBadge } from '../components/ui'
-import { chartTooltipStyle, formatNumber, formatQualifiedNumber } from '../lib/format'
+import { getChartTooltipStyle, formatNumber, formatQualifiedNumber } from '../lib/format'
+import { useChartTheme } from '../hooks/useChartTheme'
 import {
   Bar,
   BarChart,
@@ -138,11 +139,12 @@ function FactorChain() {
 }
 
 function BogatyrDot({ cx, cy, payload }) {
+  const chart = useChartTheme()
   if (cx == null || cy == null) return null
   return (
     <g>
-      <circle cx={cx} cy={cy} r={7} fill="#101826" stroke="#5eead4" strokeWidth={2.5} />
-      <text x={cx} y={cy - 16} textAnchor="middle" fill="#8b9bb3" fontSize={9} letterSpacing="0.04em">
+      <circle cx={cx} cy={cy} r={7} fill={chart.plotFill} stroke="#5eead4" strokeWidth={2.5} />
+      <text x={cx} y={cy - 16} textAnchor="middle" fill={chart.axis} fontSize={9} letterSpacing="0.04em">
         {payload.status}
       </text>
     </g>
@@ -188,6 +190,7 @@ function SectionError({ error }) {
 }
 
 export function OutlookPage() {
+  const chart = useChartTheme()
   const { data, loading, error, reload } = useMarketData(getOutlook)
   const generationCapacity = data?.nationalProject?.indicators.find(
     (item) => item.indicator_kind === 'capacity',
@@ -442,16 +445,16 @@ export function OutlookPage() {
                           ]}
                           margin={{ top: 28, right: 18, left: 4, bottom: 8 }}
                         >
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                          <XAxis dataKey="year" stroke="#8b9bb3" tick={{ fontSize: 11 }} />
+                          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                          <XAxis dataKey="year" stroke={chart.axis} tick={{ fontSize: 11 }} />
                           <YAxis
-                            stroke="#8b9bb3"
+                            stroke={chart.axis}
                             tick={{ fontSize: 11 }}
                             tickFormatter={(value) => formatNumber(Number(value))}
                             domain={[(min) => Math.floor(min - 3), (max) => Math.ceil(max + 3)]}
                           />
                           <Tooltip
-                            contentStyle={chartTooltipStyle}
+                            contentStyle={getChartTooltipStyle()}
                             formatter={(value, _name, ctx) => [
                               value == null ? '—' : `${formatNumber(Number(value))} млн т`,
                               ctx?.payload?.status || 'Контрольная точка',
@@ -622,23 +625,23 @@ export function OutlookPage() {
                             layout="vertical"
                             margin={{ top: 4, right: 48, left: 4, bottom: 4 }}
                           >
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                            <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                             <XAxis
                               type="number"
-                              stroke="#8b9bb3"
+                              stroke={chart.axis}
                               tick={{ fontSize: 11 }}
                               tickFormatter={(value) => formatNumber(Number(value))}
                             />
                             <YAxis
                               type="category"
                               dataKey="name"
-                              stroke="#8b9bb3"
+                              stroke={chart.axis}
                               width={148}
                               interval={0}
                               tick={{ fontSize: 11 }}
                             />
                             <Tooltip
-                              contentStyle={chartTooltipStyle}
+                              contentStyle={getChartTooltipStyle()}
                               formatter={(value) => [
                                 value == null ? '—' : `${formatNumber(Number(value))} МВт`,
                                 'Мощность',

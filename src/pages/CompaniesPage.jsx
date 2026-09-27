@@ -16,6 +16,7 @@ import { getCompanyAssets, getCompanyProduction, getCompanyProfiles } from '../a
 import { NoData, PageHeader, QuietSource, StateBlock } from '../components/ui'
 import { useMarketData } from '../hooks/useMarketData'
 import { formatNumber } from '../lib/format'
+import { useChartTheme } from '../hooks/useChartTheme'
 
 function asNumber(value) {
   const n = typeof value === 'number' ? value : Number(value)
@@ -175,11 +176,12 @@ function TargetPointLabel({ x, y, value }) {
 }
 
 function CapacityAxisLabel({ viewBox }) {
+  const chart = useChartTheme()
   if (!viewBox) return null
   const x = viewBox.x + viewBox.width - 10
   const y = viewBox.y - 8
   return (
-    <text x={x} y={y} textAnchor="end" fill="#8b9bb3" fontSize={11} fontFamily="IBM Plex Sans, sans-serif">
+    <text x={x} y={y} textAnchor="end" fill={chart.axis} fontSize={11} fontFamily="IBM Plex Sans, sans-serif">
       Мощность
     </text>
   )
@@ -200,6 +202,7 @@ function HeroMetric({ caption, value, unit, sourceId, note, tone = 'numeric' }) 
 }
 
 export function CompaniesPage() {
+  const palette = useChartTheme()
   const location = useLocation()
   const { data: profiles, loading, error, reload } = useMarketData(getCompanyProfiles)
   const [selectedCode, setSelectedCode] = useState('bogatyr-komir')
@@ -395,17 +398,17 @@ export function CompaniesPage() {
                         <div className="outlook-chart is-national companies-chart">
                           <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={chart.rows} margin={{ top: 22, right: 18, left: 4, bottom: 36 }}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                              <CartesianGrid strokeDasharray="3 3" stroke={palette.grid} />
                               <XAxis
                                 dataKey="year"
-                                stroke="#8b9bb3"
+                                stroke={palette.axis}
                                 interval={0}
-                                tick={{ fontSize: 11, fill: '#8b9bb3' }}
+                                tick={{ fontSize: 11, fill: palette.axis }}
                                 tickMargin={8}
                               />
                               <YAxis
-                                stroke="#8b9bb3"
-                                tick={{ fontSize: 12, fill: '#8b9bb3' }}
+                                stroke={palette.axis}
+                                tick={{ fontSize: 12, fill: palette.axis }}
                                 domain={[yMin, Number(yMax.toFixed(1))]}
                                 tickFormatter={(value) => formatNumber(value, value % 1 === 0 ? 0 : 1)}
                                 width={52}
@@ -422,7 +425,7 @@ export function CompaniesPage() {
                               <Legend
                                 verticalAlign="bottom"
                                 height={28}
-                                wrapperStyle={{ fontSize: 12, color: '#8b9bb3', paddingTop: 10 }}
+                                wrapperStyle={{ fontSize: 12, color: palette.axis, paddingTop: 10 }}
                               />
                               {asNumber(capacityRow?.value) != null ? (
                                 <ReferenceLine
@@ -441,7 +444,7 @@ export function CompaniesPage() {
                                   name="Факт"
                                   stroke="#c4a056"
                                   strokeWidth={2.4}
-                                  dot={{ r: 5, fill: '#c4a056', stroke: '#101826', strokeWidth: 2 }}
+                                  dot={{ r: 5, fill: '#c4a056', stroke: palette.dotStroke, strokeWidth: 2 }}
                                   activeDot={{ r: 6 }}
                                   connectNulls={false}
                                 >
@@ -456,7 +459,7 @@ export function CompaniesPage() {
                                   stroke="#7d97b3"
                                   strokeWidth={1.8}
                                   strokeDasharray="5 4"
-                                  dot={{ r: 4.5, fill: '#101826', stroke: '#7d97b3', strokeWidth: 2 }}
+                                  dot={{ r: 4.5, fill: palette.plotFill, stroke: '#7d97b3', strokeWidth: 2 }}
                                   connectNulls={false}
                                 >
                                   <LabelList dataKey="plan" content={(props) => <ChartPointLabel {...props} fill="#9bb0c6" />} />
@@ -470,7 +473,7 @@ export function CompaniesPage() {
                                   stroke="#b0892a"
                                   strokeWidth={1.4}
                                   strokeDasharray="1 5"
-                                  dot={{ r: 4, fill: '#101826', stroke: '#b0892a', strokeWidth: 1.8 }}
+                                  dot={{ r: 4, fill: palette.plotFill, stroke: '#b0892a', strokeWidth: 1.8 }}
                                   connectNulls={false}
                                 >
                                   <LabelList dataKey="target" content={(props) => <TargetPointLabel {...props} />} />

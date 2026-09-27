@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { GEOGRAPHY_STATUS_2025, GEOGRAPHY_STATUS_LABEL } from '../data/geographyStatuses'
 import { KZ_MAP_ATTRIBUTION, KZ_MAP_REGIONS, KZ_MAP_VIEWBOX } from '../data/kazakhstanRegionsMap'
 import { formatCoalVolume } from '../lib/format'
+import { useMapTheme } from '../hooks/useChartTheme'
 
 function mixHex(from, to, t) {
   const parse = (hex) => [
@@ -21,14 +22,15 @@ function publicationStatus(code, data) {
   return 'unpublished'
 }
 
-function regionFill(status, value, max) {
-  if (status === 'confidential') return '#2a3345'
-  if (status !== 'numeric' || value == null || max == null || max <= 0) return '#151c28'
+function regionFill(status, value, max, palette) {
+  if (status === 'confidential') return palette.confidential
+  if (status !== 'numeric' || value == null || max == null || max <= 0) return palette.empty
   const t = Math.max(0.14, Math.min(0.88, (value / max) ** 0.72))
-  return mixHex('#2f2b22', '#8f7848', t)
+  return mixHex(palette.heatFrom, palette.heatTo, t)
 }
 
 export function KazakhstanCoalMap({ byCode, sourceLabel = 'БНС' }) {
+  const palette = useMapTheme()
   const [hover, setHover] = useState(null)
   const max = useMemo(() => {
     const values = Object.values(byCode || {})
@@ -67,7 +69,7 @@ export function KazakhstanCoalMap({ byCode, sourceLabel = 'БНС' }) {
               key={region.id}
               className={`geo-map-region is-${status}${hover?.id === region.id ? ' is-hover' : ''}`}
               d={region.d}
-              fill={regionFill(status, data?.value, max)}
+              fill={regionFill(status, data?.value, max, palette)}
               onPointerUp={(event) =>
                 showTip({ id: region.id, name: data?.name || region.name, data, status, volume }, event)
               }

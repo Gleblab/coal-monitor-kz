@@ -1,4 +1,5 @@
 import { coalTypes, energySectors, regions } from '../data/catalog'
+import { getChartTooltipStyle as readChartTooltipStyle } from './theme'
 
 export function labelById(list, id) {
   return list.find((item) => item.id === id)?.name ?? id
@@ -66,6 +67,11 @@ export function formatQualifiedNumber(value, qualifier, approx = false, digits) 
   return `${valueQualifierPrefix(qualifier, approx)}${formatNumber(value, digits)}`
 }
 
+export function getChartTooltipStyle() {
+  return readChartTooltipStyle()
+}
+
+/** Dark production defaults; live theme via getChartTooltipStyle(). */
 export const chartTooltipStyle = {
   background: '#101826',
   border: '1px solid #2c3a52',

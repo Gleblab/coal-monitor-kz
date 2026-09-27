@@ -16,6 +16,7 @@ import { WatchlistButton } from './watchlist/WatchlistButton'
 import { WatchlistDrawer } from './watchlist/WatchlistDrawer'
 import { ChangeCenterButton } from './change/ChangeCenterButton'
 import { ChangeCenterDrawer } from './change/ChangeCenterDrawer'
+import { ThemeToggle } from './ThemeToggle'
 import { SavedViewsBar } from './SavedViewsBar'
 import { RouteScan } from './RouteScan'
 import { SourceDialog } from './ui'
@@ -352,6 +353,7 @@ export function Layout({ children }) {
               <MarketSearchButton />
               <WatchlistButton />
               <ChangeCenterButton />
+              <ThemeToggle />
             </div>
             <span
               className="topbar-integrity"

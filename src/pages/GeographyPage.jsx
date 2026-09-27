@@ -14,7 +14,8 @@ import { KazakhstanCoalMap } from '../components/KazakhstanCoalMap'
 import { NoData, PageHeader, QuietSource, StateBlock } from '../components/ui'
 import { useFilters } from '../context/FilterContext'
 import { useMarketData } from '../hooks/useMarketData'
-import { chartTooltipStyle, formatCoalVolume, formatNumber } from '../lib/format'
+import { getChartTooltipStyle, formatCoalVolume, formatNumber } from '../lib/format'
+import { useChartTheme } from '../hooks/useChartTheme'
 
 function InsightCard({ item, caption }) {
   if (!item) return null
@@ -32,6 +33,7 @@ function InsightCard({ item, caption }) {
 }
 
 export function GeographyPage() {
+  const chart = useChartTheme()
   const { filters } = useFilters()
   const { data, loading, error, reload } = useMarketData(getGeography, filters)
   const failed = Boolean(error) || (data && data.ok === false)
@@ -185,17 +187,17 @@ export function GeographyPage() {
               <div className="chart-box outlook-chart geo-chart">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 18, right: 16, left: 8, bottom: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                    <XAxis dataKey="year" stroke="#7d8ca3" tick={{ fill: '#7d8ca3', fontSize: 12 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                    <XAxis dataKey="year" stroke={chart.axis} tick={{ fill: chart.axis, fontSize: 12 }} />
                     <YAxis
-                      stroke="#7d8ca3"
-                      tick={{ fill: '#7d8ca3', fontSize: 12 }}
+                      stroke={chart.axis}
+                      tick={{ fill: chart.axis, fontSize: 12 }}
                       domain={[Math.floor(chartMin - 2), Math.ceil(chartMax + 2)]}
                       unit=" млн т"
                       width={72}
                     />
                     <Tooltip
-                      contentStyle={chartTooltipStyle}
+                      contentStyle={getChartTooltipStyle()}
                       formatter={(value) => [`${formatNumber(Number(value), 1)} млн т`, 'Добыча']}
                     />
                     <Line
@@ -203,7 +205,7 @@ export function GeographyPage() {
                       dataKey="value"
                       stroke="#b08d3a"
                       strokeWidth={2}
-                      dot={{ r: 4, fill: '#b08d3a', stroke: '#0f1624', strokeWidth: 1 }}
+                      dot={{ r: 4, fill: '#b08d3a', stroke: chart.dotStroke, strokeWidth: 1 }}
                       activeDot={{ r: 5, fill: '#c4a35a' }}
                     >
                       <LabelList dataKey="label" position="top" fill="#9aabc2" fontSize={11} />

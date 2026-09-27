@@ -4,7 +4,8 @@ import { useFilters } from '../context/FilterContext'
 import { getConcentration } from '../api/marketApi'
 import { useMarketData } from '../hooks/useMarketData'
 import { NoData, PageHeader, QuietSource, StateBlock } from '../components/ui'
-import { chartTooltipStyle, formatNumber } from '../lib/format'
+import { getChartTooltipStyle, formatNumber } from '../lib/format'
+import { useChartTheme } from '../hooks/useChartTheme'
 import {
   Bar,
   BarChart,
@@ -41,6 +42,7 @@ function ShareTooltip({ active, payload, label }) {
 }
 
 function ComparativeChart({ items, note }) {
+  const chart = useChartTheme()
   const chartRows = items.map((item) => ({
     segment: item.shortLabel || item.segment,
     y2024: item.value2024,
@@ -60,25 +62,25 @@ function ComparativeChart({ items, note }) {
             data={chartRows}
             margin={{ top: 8, right: 24, left: 4, bottom: 8 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
             <XAxis
               type="number"
               domain={[0, 100]}
-              stroke="#7d8ca3"
-              tick={{ fill: '#7d8ca3', fontSize: 11 }}
+              stroke={chart.axis}
+              tick={{ fill: chart.axis, fontSize: 11 }}
               tickFormatter={(value) => `${value}%`}
             />
             <YAxis
               type="category"
               dataKey="segment"
-              stroke="#7d8ca3"
+              stroke={chart.axis}
               width={118}
               interval={0}
-              tick={{ fill: '#7d8ca3', fontSize: 11 }}
+              tick={{ fill: chart.axis, fontSize: 11 }}
             />
-            <Tooltip content={<ShareTooltip />} contentStyle={chartTooltipStyle} />
+            <Tooltip content={<ShareTooltip />} contentStyle={getChartTooltipStyle()} />
             <Legend
-              wrapperStyle={{ fontSize: 12, color: '#8b9bb3', paddingTop: 4 }}
+              wrapperStyle={{ fontSize: 12, color: chart.axis, paddingTop: 4 }}
             />
             <Bar dataKey="y2024" name="2024" fill="#5b7c99" maxBarSize={14} />
             <Bar dataKey="y2025" name="2025" fill="#c4a056" maxBarSize={14} />

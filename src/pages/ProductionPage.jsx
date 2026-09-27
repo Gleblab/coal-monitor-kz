@@ -4,7 +4,8 @@ import { useMarketData } from '../hooks/useMarketData'
 import { CompareButton } from '../components/comparison/CompareButton'
 import { MetricTraceButton } from '../components/traceability/MetricTraceButton'
 import { KpiCard, NoData, PageHeader, QuietSource, StateBlock, StatusBadge } from '../components/ui'
-import { chartTooltipStyle, formatNumber } from '../lib/format'
+import { getChartTooltipStyle, formatNumber } from '../lib/format'
+import { useChartTheme } from '../hooks/useChartTheme'
 import {
   CartesianGrid,
   Line,
@@ -53,6 +54,7 @@ function ProductionTooltip({ active, payload, label }) {
 }
 
 export function ProductionPage() {
+  const chart = useChartTheme()
   const { data, loading, error, reload } = useMarketData(getProduction, { region: 'all', coalType: 'all' })
   const bns2025 = data?.bnsSeries?.find((item) => item.year === 2025 && item.value != null) || null
   const ministry = data?.ministryProduction || data?.ministryBalance?.production || null
@@ -167,11 +169,11 @@ export function ProductionPage() {
                 <div className="chart-box dynamics-chart">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartRows} margin={{ top: 16, right: 8, left: 4, bottom: 8 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="year" stroke="#7d8ca3" tick={{ fill: '#7d8ca3', fontSize: 12 }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                      <XAxis dataKey="year" stroke={chart.axis} tick={{ fill: chart.axis, fontSize: 12 }} />
                       <YAxis
-                        stroke="#7d8ca3"
-                        tick={{ fill: '#7d8ca3', fontSize: 11 }}
+                        stroke={chart.axis}
+                        tick={{ fill: chart.axis, fontSize: 11 }}
                         width={52}
                         domain={[
                           (min) => (Number.isFinite(Number(min)) ? Math.floor(Number(min) - 2) : 'auto'),
@@ -179,13 +181,13 @@ export function ProductionPage() {
                         ]}
                         tickFormatter={(value) => formatNumber(Number(value), 1)}
                       />
-                      <Tooltip content={<ProductionTooltip />} contentStyle={chartTooltipStyle} />
+                      <Tooltip content={<ProductionTooltip />} contentStyle={getChartTooltipStyle()} />
                       <Line
                         type="linear"
                         dataKey="value"
                         stroke="#c4a056"
                         strokeWidth={2}
-                        dot={{ r: 4, fill: '#c4a056', stroke: '#0f1624', strokeWidth: 1 }}
+                        dot={{ r: 4, fill: '#c4a056', stroke: chart.dotStroke, strokeWidth: 1 }}
                         connectNulls={false}
                       />
                     </LineChart>

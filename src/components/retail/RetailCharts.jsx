@@ -10,7 +10,8 @@ import {
   YAxis,
   ZAxis,
 } from 'recharts'
-import { chartTooltipStyle, formatNumber } from '../../lib/format'
+import { getChartTooltipStyle, formatNumber } from '../../lib/format'
+import { useChartTheme } from '../../hooks/useChartTheme'
 import { brandColor, pluralizeLocality, pluralizeObservation } from '../../lib/retailAnalytics'
 
 function formatKzt(value) {
@@ -211,6 +212,7 @@ function useCompactRetailGeoChart() {
 }
 
 function GeoYTick({ x, y, payload, compact }) {
+  const chart = useChartTheme()
   const source = String(payload?.value || '')
   const display = compact ? compactLocalityLabel(source) : source
   const lines = wrapTick(display, compact ? 16 : 18)
@@ -223,7 +225,7 @@ function GeoYTick({ x, y, payload, compact }) {
           x={compact ? -4 : -6}
           y={index * 12 - offset + 3}
           textAnchor="end"
-          fill="#8b9bb3"
+          fill={chart.axis}
           fontSize={compact ? 12 : 11}
         >
           {line}
@@ -255,6 +257,7 @@ function GeoTooltip({ active, payload }) {
 }
 
 export function RetailGeoPlot({ points }) {
+  const chart = useChartTheme()
   const compact = useCompactRetailGeoChart()
   const localities = [...new Set(points.map((item) => item.locality))]
   const brands = [...new Set(points.map((item) => item.brand))]
@@ -271,13 +274,13 @@ export function RetailGeoPlot({ points }) {
               : { top: 8, right: 12, left: 4, bottom: 8 }
           }
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
           <XAxis
             type="number"
             dataKey="price"
             name="Цена"
-            stroke="#7d8ca3"
-            tick={{ fill: '#7d8ca3', fontSize: compact ? 11 : 11 }}
+            stroke={chart.axis}
+            tick={{ fill: chart.axis, fontSize: compact ? 11 : 11 }}
             tickFormatter={(value) => formatKzt(Number(value))}
             padding={{ left: compact ? 8 : 0, right: compact ? 8 : 0 }}
           />
@@ -288,15 +291,15 @@ export function RetailGeoPlot({ points }) {
             allowDuplicatedCategory={false}
             interval={0}
             width={compact ? 92 : 158}
-            stroke="#7d8ca3"
+            stroke={chart.axis}
             tick={(props) => <GeoYTick {...props} compact={compact} />}
           />
           <ZAxis range={[60, 60]} />
-          <Tooltip content={<GeoTooltip />} contentStyle={chartTooltipStyle} cursor={{ stroke: 'rgba(255,255,255,0.12)' }} />
+          <Tooltip content={<GeoTooltip />} contentStyle={getChartTooltipStyle()} cursor={{ stroke: chart.cursor }} />
           <Legend
             wrapperStyle={{
               fontSize: 12,
-              color: '#8b9bb3',
+              color: chart.axis,
               width: '100%',
               paddingTop: compact ? 4 : 0,
             }}
@@ -339,32 +342,33 @@ function StockTooltip({ active, payload }) {
 }
 
 export function RetailStockScatter({ points }) {
+  const chart = useChartTheme()
   const brands = [...new Set(points.map((item) => item.brand))]
   return (
     <div className="chart-box retail-chart retail-stock-chart">
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 8, right: 12, left: 4, bottom: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
           <XAxis
             type="number"
             dataKey="price"
             name="Цена"
-            stroke="#7d8ca3"
-            tick={{ fill: '#7d8ca3', fontSize: 11 }}
+            stroke={chart.axis}
+            tick={{ fill: chart.axis, fontSize: 11 }}
             tickFormatter={(value) => formatKzt(Number(value))}
           />
           <YAxis
             type="number"
             dataKey="stockTonnes"
             name="Запас"
-            stroke="#7d8ca3"
-            tick={{ fill: '#7d8ca3', fontSize: 11 }}
+            stroke={chart.axis}
+            tick={{ fill: chart.axis, fontSize: 11 }}
             width={56}
             tickFormatter={(value) => formatNumber(Number(value), 0)}
           />
           <ZAxis range={[70, 70]} />
-          <Tooltip content={<StockTooltip />} contentStyle={chartTooltipStyle} cursor={{ strokeDasharray: '3 3' }} />
-          <Legend wrapperStyle={{ fontSize: 12, color: '#8b9bb3' }} />
+          <Tooltip content={<StockTooltip />} contentStyle={getChartTooltipStyle()} cursor={{ strokeDasharray: '3 3' }} />
+          <Legend wrapperStyle={{ fontSize: 12, color: chart.axis }} />
           {brands.map((brand) => (
             <Scatter
               key={brand}

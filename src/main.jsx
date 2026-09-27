@@ -9,29 +9,32 @@ import { MarketSearchProvider } from './context/MarketSearchContext'
 import { WatchlistProvider } from './context/WatchlistContext'
 import { ChangeCenterProvider } from './context/ChangeCenterContext'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import App from './App.jsx'
 import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <FilterProvider>
-          <SourceProvider>
-            <ComparisonProvider>
-              <MetricTraceProvider>
-                <MarketSearchProvider>
-                  <WatchlistProvider>
-                    <ChangeCenterProvider>
-                      <App />
-                    </ChangeCenterProvider>
-                  </WatchlistProvider>
-                </MarketSearchProvider>
-              </MetricTraceProvider>
-            </ComparisonProvider>
-          </SourceProvider>
-        </FilterProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <FilterProvider>
+            <SourceProvider>
+              <ComparisonProvider>
+                <MetricTraceProvider>
+                  <MarketSearchProvider>
+                    <WatchlistProvider>
+                      <ChangeCenterProvider>
+                        <App />
+                      </ChangeCenterProvider>
+                    </WatchlistProvider>
+                  </MarketSearchProvider>
+                </MetricTraceProvider>
+              </ComparisonProvider>
+            </SourceProvider>
+          </FilterProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,
 )

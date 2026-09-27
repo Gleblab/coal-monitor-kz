@@ -23,7 +23,8 @@ import { ExportWorldMap } from '../components/ExportWorldMap'
 import { MetricTraceButton } from '../components/traceability/MetricTraceButton'
 import { NoData, PageHeader, QuietSource, StateBlock } from '../components/ui'
 import { iso3FromPartner } from '../data/exportMapIso'
-import { formatNumber, formatSignedPercent, formatTonnes, formatUsdAmount } from '../lib/format'
+import { getChartTooltipStyle, formatNumber, formatSignedPercent, formatTonnes, formatUsdAmount } from '../lib/format'
+import { useChartTheme } from '../hooks/useChartTheme'
 
 const LATEST_YTD = 'ytd-2026-01-07'
 const COMPARE_YTD = 'ytd-2025-01-07'
@@ -125,6 +126,7 @@ function partnerYoySuffix(yoy) {
 }
 
 export function ExportsPage() {
+  const chart = useChartTheme()
   const [boot, setBoot] = useState({ loading: true, error: null })
   const [periods, setPeriods] = useState([])
   const [annual, setAnnual] = useState(null)
@@ -569,11 +571,11 @@ export function ExportsPage() {
                   <p className="outlook-metric-caption">Объём, млн т</p>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={compareBars} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="period" stroke="#8b9bb3" tick={{ fontSize: 11, fill: '#8b9bb3' }} />
-                      <YAxis stroke="#8b9bb3" tick={{ fontSize: 11, fill: '#8b9bb3' }} width={36} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                      <XAxis dataKey="period" stroke={chart.axis} tick={{ fontSize: 11, fill: chart.axis }} />
+                      <YAxis stroke={chart.axis} tick={{ fontSize: 11, fill: chart.axis }} width={36} />
                       <Tooltip
-                        contentStyle={{ background: '#101826', border: '1px solid #2c3a52' }}
+                        contentStyle={getChartTooltipStyle()}
                         formatter={(val) => [`${formatNumber(Number(val), 2)} млн т`, 'Объём']}
                       />
                       <Bar dataKey="volume" fill="#b08932" radius={[3, 3, 0, 0]} />
@@ -584,11 +586,11 @@ export function ExportsPage() {
                   <p className="outlook-metric-caption">Стоимость, млн $</p>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={compareBars} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="period" stroke="#8b9bb3" tick={{ fontSize: 11, fill: '#8b9bb3' }} />
-                      <YAxis stroke="#8b9bb3" tick={{ fontSize: 11, fill: '#8b9bb3' }} width={40} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                      <XAxis dataKey="period" stroke={chart.axis} tick={{ fontSize: 11, fill: chart.axis }} />
+                      <YAxis stroke={chart.axis} tick={{ fontSize: 11, fill: chart.axis }} width={40} />
                       <Tooltip
-                        contentStyle={{ background: '#101826', border: '1px solid #2c3a52' }}
+                        contentStyle={getChartTooltipStyle()}
                         formatter={(val) => [`${formatNumber(Number(val), 1)} млн $`, 'Стоимость']}
                       />
                       <Bar dataKey="value" fill="#7d97b3" radius={[3, 3, 0, 0]} />
@@ -693,11 +695,11 @@ export function ExportsPage() {
                           data={rankingView}
                           margin={{ top: 8, right: 36, left: 8, bottom: 8 }}
                         >
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                           <XAxis
                             type="number"
-                            stroke="#8b9bb3"
-                            tick={{ fontSize: 11, fill: '#8b9bb3' }}
+                            stroke={chart.axis}
+                            tick={{ fontSize: 11, fill: chart.axis }}
                             tickFormatter={(value) => formatNumber(Number(value), 1)}
                             domain={[0, (dataMax) => dataMax]}
                             allowDecimals
@@ -706,8 +708,8 @@ export function ExportsPage() {
                             type="category"
                             dataKey="country"
                             width={118}
-                            stroke="#8b9bb3"
-                            tick={{ fontSize: 12, fill: '#c5d0de' }}
+                            stroke={chart.axis}
+                            tick={{ fontSize: 12, fill: chart.axis }}
                             interval={0}
                           />
                           <Tooltip
@@ -895,11 +897,11 @@ export function ExportsPage() {
                   <p className="outlook-metric-caption">Объём, млн т</p>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={annualVolume} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="year" stroke="#8b9bb3" tick={{ fontSize: 12, fill: '#8b9bb3' }} />
-                      <YAxis stroke="#8b9bb3" tick={{ fontSize: 11, fill: '#8b9bb3' }} width={36} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                      <XAxis dataKey="year" stroke={chart.axis} tick={{ fontSize: 12, fill: chart.axis }} />
+                      <YAxis stroke={chart.axis} tick={{ fontSize: 11, fill: chart.axis }} width={36} />
                       <Tooltip
-                        contentStyle={{ background: '#101826', border: '1px solid #2c3a52' }}
+                        contentStyle={getChartTooltipStyle()}
                         formatter={(val) => [`${formatNumber(Number(val), 3)} млн т`, 'Объём']}
                       />
                       <Bar dataKey="volume" fill="#b08932" radius={[3, 3, 0, 0]} />
@@ -910,11 +912,11 @@ export function ExportsPage() {
                   <p className="outlook-metric-caption">Стоимость, млн $</p>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={annualValue} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="year" stroke="#8b9bb3" tick={{ fontSize: 12, fill: '#8b9bb3' }} />
-                      <YAxis stroke="#8b9bb3" tick={{ fontSize: 11, fill: '#8b9bb3' }} width={40} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                      <XAxis dataKey="year" stroke={chart.axis} tick={{ fontSize: 12, fill: chart.axis }} />
+                      <YAxis stroke={chart.axis} tick={{ fontSize: 11, fill: chart.axis }} width={40} />
                       <Tooltip
-                        contentStyle={{ background: '#101826', border: '1px solid #2c3a52' }}
+                        contentStyle={getChartTooltipStyle()}
                         formatter={(val) => [`${formatNumber(Number(val), 2)} млн $`, 'Стоимость']}
                       />
                       <Bar dataKey="value" fill="#7d97b3" radius={[3, 3, 0, 0]} />

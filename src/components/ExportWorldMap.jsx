@@ -9,6 +9,7 @@ import {
   geometryToFocusBounds,
   geometryToPath,
 } from '../lib/geoSvg'
+import { useMapTheme } from '../hooks/useChartTheme'
 
 function mixHex(from, to, t) {
   const parse = (hex) => [
@@ -22,10 +23,10 @@ function mixHex(from, to, t) {
   return `#${[0, 1, 2].map((i) => channel(i).toString(16).padStart(2, '0')).join('')}`
 }
 
-function partnerFill(tonnes, max) {
-  if (typeof tonnes !== 'number' || max == null || max <= 0) return '#151c28'
+function partnerFill(tonnes, max, palette) {
+  if (typeof tonnes !== 'number' || max == null || max <= 0) return palette.empty
   const t = Math.max(0.16, Math.min(0.92, (tonnes / max) ** 0.62))
-  return mixHex('#2a271f', '#9a7a32', t)
+  return mixHex(palette.exportFrom, palette.exportTo, t)
 }
 
 function yoyCaption(period) {
@@ -56,6 +57,7 @@ export function ExportWorldMap({
   selectedIso = null,
   onSelect,
 }) {
+  const palette = useMapTheme()
   const svgRef = useRef(null)
   const dragRef = useRef(null)
   const viewRef = useRef(WORLD_VIEW)
@@ -210,7 +212,7 @@ export function ExportWorldMap({
         }}
         onMouseLeave={hideTip}
       >
-        <rect width={WORLD_MAP_WIDTH} height={WORLD_MAP_HEIGHT} fill="#0c121c" />
+        <rect width={WORLD_MAP_WIDTH} height={WORLD_MAP_HEIGHT} fill={palette.canvas} />
         <g
           className={`export-map-layer${isDragging ? ' is-dragging' : ''}${prefersReducedMotion() ? ' is-reduced' : ''}`}
           style={{ transform: layerTransform }}
@@ -222,10 +224,10 @@ export function ExportWorldMap({
             const clickable = hasVolume && !isKazakhstan
             const isSelected = selectedIso === country.iso
             const fill = isKazakhstan
-              ? '#3f4d3c'
+              ? palette.origin
               : hasVolume
-                ? partnerFill(row.tonnes, maxTonnes)
-                : '#151c28'
+                ? partnerFill(row.tonnes, maxTonnes, palette)
+                : palette.empty
             return (
               <path
                 key={country.iso}

@@ -3,7 +3,8 @@ import { useFilters } from '../context/FilterContext'
 import { getPriceDynamics } from '../api/marketApi'
 import { useMarketData } from '../hooks/useMarketData'
 import { NoData, PageHeader, QuietSource, StateBlock, StatusBadge, SourceButton } from '../components/ui'
-import { chartTooltipStyle, formatNumber } from '../lib/format'
+import { getChartTooltipStyle, formatNumber } from '../lib/format'
+import { useChartTheme } from '../hooks/useChartTheme'
 import {
   CartesianGrid,
   Legend,
@@ -48,17 +49,17 @@ function WeightedChart({ pack }) {
     <div className="chart-box dynamics-chart">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={pack.rows} margin={{ top: 16, right: 12, left: 4, bottom: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-          <XAxis dataKey="period" stroke="#7d8ca3" tick={{ fill: '#7d8ca3', fontSize: 12 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+          <XAxis dataKey="period" stroke={chart.axis} tick={{ fill: chart.axis, fontSize: 12 }} />
           <YAxis
-            stroke="#7d8ca3"
-            tick={{ fill: '#7d8ca3', fontSize: 11 }}
+            stroke={chart.axis}
+            tick={{ fill: chart.axis, fontSize: 11 }}
             width={64}
             tickFormatter={(value) => formatKzt(Number(value))}
           />
-          <Tooltip content={<PriceTooltip />} contentStyle={chartTooltipStyle} />
+          <Tooltip content={<PriceTooltip />} contentStyle={getChartTooltipStyle()} />
           <Legend
-            wrapperStyle={{ fontSize: 12, color: '#8b9bb3', paddingTop: 8 }}
+            wrapperStyle={{ fontSize: 12, color: chart.axis, paddingTop: 8 }}
             iconType="plainline"
           />
           {pack.series.map((item) => (
@@ -69,7 +70,7 @@ function WeightedChart({ pack }) {
               name={item.name}
               stroke={item.color}
               strokeWidth={2}
-              dot={{ r: 3, fill: item.color, stroke: '#0f1624', strokeWidth: 1 }}
+              dot={{ r: 3, fill: item.color, stroke: chart.dotStroke, strokeWidth: 1 }}
               connectNulls={false}
             />
           ))}
@@ -80,6 +81,7 @@ function WeightedChart({ pack }) {
 }
 
 export function DynamicsPage() {
+  const chart = useChartTheme()
   const { filters } = useFilters()
   const { data, loading, error, reload } = useMarketData(getPriceDynamics, filters)
   const globalSegment = filters.coalType ?? 'all'
@@ -214,11 +216,11 @@ export function DynamicsPage() {
                           data={data.history.bogatyrList.rows}
                           margin={{ top: 12, right: 8, left: 0, bottom: 8 }}
                         >
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                          <XAxis dataKey="period" stroke="#7d8ca3" tick={{ fill: '#7d8ca3', fontSize: 11 }} />
+                          <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                          <XAxis dataKey="period" stroke={chart.axis} tick={{ fill: chart.axis, fontSize: 11 }} />
                           <YAxis
-                            stroke="#7d8ca3"
-                            tick={{ fill: '#7d8ca3', fontSize: 11 }}
+                            stroke={chart.axis}
+                            tick={{ fill: chart.axis, fontSize: 11 }}
                             width={56}
                             tickFormatter={(value) => formatKzt(Number(value))}
                           />
@@ -229,7 +231,7 @@ export function DynamicsPage() {
                             name="Богатырь Комир"
                             stroke="#c4a056"
                             strokeWidth={2}
-                            dot={{ r: 3, fill: '#c4a056', stroke: '#0f1624' }}
+                            dot={{ r: 3, fill: '#c4a056', stroke: chart.dotStroke }}
                           />
                         </LineChart>
                       </ResponsiveContainer>
