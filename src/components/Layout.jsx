@@ -322,11 +322,11 @@ export function Layout({ children }) {
         onOpenLogin={() => setAuthOpen(true)}
       />
       <div className="main-column">
+        <div className="topbar-identity">
+          <strong>Аналитический модуль рынка угля</strong>
+          <span>Республика Казахстан · официальные публикации</span>
+        </div>
         <header className="topbar">
-          <div className="topbar-identity">
-            <strong>Аналитический модуль рынка угля</strong>
-            <span>Республика Казахстан · официальные публикации</span>
-          </div>
           <div className="topbar-status">
             <div className="topbar-tools">
               <MarketSearchButton />

@@ -191,26 +191,35 @@ input {
   min-width: 0;
 }
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
+.topbar-identity {
+  min-width: 0;
   padding: 14px 24px 8px;
 }
 
-.topbar-identity {
-  min-width: 0;
-}
-
-.topbar strong {
+.topbar-identity strong {
   display: block;
   font-size: 13px;
 }
 
-.topbar span {
+.topbar-identity span {
   color: var(--muted);
   font-size: 12px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 18;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 8px 24px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
 }
 
 .topbar-status {
@@ -220,6 +229,8 @@ input {
   color: var(--muted);
   font-size: 12px;
   min-width: 0;
+  flex: 1 1 auto;
+  justify-content: flex-end;
 }
 
 .topbar-integrity {
@@ -5017,6 +5028,7 @@ a.cmd-text-btn {
   }
 
   .topbar,
+  .topbar-identity,
   .filter-bar {
     padding-left: 12px;
     padding-right: 12px;
