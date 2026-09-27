@@ -3,13 +3,33 @@ import { INDICATOR_STATUS, sources } from './sources'
 /**
  * Каталог только тех показателей, которые заданы официальными публикациями.
  * Отсутствующие срезы не досчитываются и не заполняются моделью.
+ *
+ * Числовые поля — ожидаемые значения для сверки remote match и metadata (подписи, search).
+ * Не использовать как silent runtime fallback вместо Supabase / verified payload.
  */
 
 export const regions = [
   { id: 'all', name: 'Все регионы / республика' },
   { id: 'astana', name: 'г. Астана' },
-  { id: 'pavlodar', name: 'Павлодарская область' },
+  { id: 'almaty-city', name: 'г. Алматы' },
+  { id: 'shymkent', name: 'г. Шымкент' },
+  { id: 'abai', name: 'Область Абай' },
+  { id: 'akmola', name: 'Акмолинская область' },
+  { id: 'aktobe', name: 'Актюбинская область' },
+  { id: 'almaty', name: 'Алматинская область' },
+  { id: 'atyrau', name: 'Атырауская область' },
+  { id: 'east-kazakhstan', name: 'Восточно-Казахстанская область' },
+  { id: 'zhambyl', name: 'Жамбылская область' },
+  { id: 'west-kazakhstan', name: 'Западно-Казахстанская область' },
+  { id: 'jetisu', name: 'область Жетісу' },
   { id: 'karaganda', name: 'Карагандинская область' },
+  { id: 'kostanay', name: 'Костанайская область' },
+  { id: 'kyzylorda', name: 'Кызылординская область' },
+  { id: 'mangystau', name: 'Мангистауская область' },
+  { id: 'pavlodar', name: 'Павлодарская область' },
+  { id: 'north-kazakhstan', name: 'Северо-Казахстанская область' },
+  { id: 'turkistan', name: 'Туркестанская область' },
+  { id: 'ulytau', name: 'Область Улытау' },
 ]
 
 export const coalTypes = [
@@ -19,6 +39,21 @@ export const coalTypes = [
   { id: 'power', name: 'Уголь для энергопроизводящих организаций' },
   { id: 'industrial', name: 'Уголь для промышленных нужд' },
 ]
+
+/** Секторы ТЭБ БНС для /energy-role. Не равны сегментам АЗРК (coalTypes). */
+export const energySectors = [
+  { id: 'all', name: 'Все сегменты' },
+  { id: 'industry', name: 'Промышленность' },
+  { id: 'transport', name: 'Транспорт' },
+  { id: 'residential', name: 'Жилищный сектор' },
+  { id: 'commercial', name: 'Коммерция и услуги' },
+  { id: 'agri_forestry_fishing', name: 'Сельское и рыбное' },
+  { id: 'other_unspecified', name: 'Другие / не указанные' },
+]
+
+export const ENERGY_ROLE_SECTOR_IDS = new Set(
+  energySectors.filter((item) => item.id !== 'all').map((item) => item.id),
+)
 
 function indicator(partial) {
   return {
@@ -443,8 +478,8 @@ export const coalAssets = [
     segmentIds: ['energy'],
     reserves: unconfirmedReserves,
     capacity: {
-      display: '12,54 млн т в год',
-      title: 'Текущая указанная производственная мощность. Не является фактической добычей.',
+      display: '16,9 млн т в год',
+      title: 'Производственная мощность по годовому отчёту 2023. Не является фактической добычей (12,544 млн т — actual 2022).',
     },
     sourceId: 'shubarkolErg',
     status: INDICATOR_STATUS.company,
@@ -533,6 +568,12 @@ export const coalAssets = [
 export const resourceGuide =
   'Геологические ресурсы, балансовые запасы предприятий и запасы, учитываемые государственной статистикой, являются различными показателями и могут рассчитываться по разной методологии. Поэтому в модуле они не суммируются и не сравниваются напрямую без методологического подтверждения.'
 
+export const SLICE_EMPTY =
+  'Нет подтверждённых данных для выбранного среза. Попробуйте изменить регион или сегмент.'
+
+export const SLICE_NATIONAL_HINT =
+  'Национальные данные доступны при выборе «Все регионы / республика» и «Все сегменты».'
+
 export const unavailable = {
   monthlyProduction2026: 'Помесячная добыча за 2026 год в подтвержденных источниках текущего контура не опубликована.',
   monthlyExport2026: 'Экспорт за отдельные месяцы 2026 года в подтвержденных источниках текущего контура не опубликован.',
@@ -543,7 +584,8 @@ export const unavailable = {
   newsFeed: 'Отдельная новостная лента не ведётся: используются только официальные публикации-источники.',
   regionalBreakdown:
     'Региональная разбивка национальных показателей БНС, Минэнерго и АЗРК в текущем наборе источников отсутствует.',
-  astanaOnly: 'Для выбранного региона подтвержденные розничные цены есть только по г. Астана.',
+  astanaOnly:
+    'Нет подтверждённых данных для выбранного среза. Розничные цены в текущем наборе есть только по г. Астана. Попробуйте выбрать «г. Астана» или «Все регионы / республика».',
 }
 
 export function getSource(sourceId) {

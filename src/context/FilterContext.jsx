@@ -2,22 +2,27 @@ import { createContext, useContext, useMemo, useState } from 'react'
 
 const FilterContext = createContext(null)
 
+const DEFAULT_FILTERS = { region: 'all', segment: 'all' }
+
 export function FilterProvider({ children }) {
-  const [region, setRegion] = useState('all')
-  const [coalType, setCoalType] = useState('all')
+  const [region, setRegion] = useState(DEFAULT_FILTERS.region)
+  const [coalType, setCoalType] = useState(DEFAULT_FILTERS.segment)
 
   const value = useMemo(
     () => ({
       region,
       coalType,
+      segment: coalType,
       setRegion,
       setCoalType,
+      setSegment: setCoalType,
       resetFilters: () => {
-        setRegion('all')
-        setCoalType('all')
+        setRegion(DEFAULT_FILTERS.region)
+        setCoalType(DEFAULT_FILTERS.segment)
       },
       filtersActive: region !== 'all' || coalType !== 'all',
-      filters: { region, coalType },
+      filters: { region, coalType, segment: coalType },
+      snapshot: () => ({ region, segment: coalType }),
     }),
     [region, coalType],
   )

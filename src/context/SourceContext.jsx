@@ -46,8 +46,9 @@ export function SourceProvider({ children }) {
       openSource: (id) => setSourceId(id),
       closeSource: () => setSourceId(null),
       source,
+      remoteByCode,
     }),
-    [source],
+    [source, remoteByCode],
   )
 
   return <SourceContext.Provider value={value}>{children}</SourceContext.Provider>

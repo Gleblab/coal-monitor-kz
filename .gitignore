@@ -27,3 +27,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Временные выгрузки БНС (не источник приложения)
+tmp-bns/
+tmp-bns-hh2022/
+tmp-teb2025/

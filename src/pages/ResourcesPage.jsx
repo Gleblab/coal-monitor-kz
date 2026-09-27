@@ -15,7 +15,7 @@ function DashCell({ cell }) {
 
 export function ResourcesPage() {
   const { filters } = useFilters()
-  const { data, loading, error } = useMarketData(getResources, filters)
+  const { data, loading, error, reload } = useMarketData(getResources, filters)
 
   return (
     <section>
@@ -23,13 +23,14 @@ export function ResourcesPage() {
         title="Ресурсная база"
         description="Главный статистический показатель запасов БНС сохранён отдельно. Каталог активов справочный: бассейны, месторождения и предприятия не суммируются."
       />
-      <StateBlock loading={loading} error={error} empty={!data}>
+      <StateBlock loading={loading} error={error} empty={!data} skeleton="chart" onRetry={reload}>
         {data ? (
           <>
             <article className="panel">
               <h2>Как читать ресурсную базу</h2>
               <p>{data.guide}</p>
             </article>
+            <p className="scope-badge">Национальный показатель запасов</p>
             <div
               className="split"
               data-reserves-origin={data.reservesDataOrigin}
@@ -61,11 +62,15 @@ export function ResourcesPage() {
               data-production-count={data.productionRemoteCount ?? ''}
             >
               <h2>Добыча в разных системах учета</h2>
+              <p className="scope-badge">Национальные показатели</p>
               <p className="kpi-note">
                 Показатели 90,2 млн т (БНС, 2024) и 115 млн т (Минэнерго, 2025) не являются взаимозаменяемыми.
               </p>
               <div className="split">
-                {data.extraction.map((item) => (
+                {data.extraction.length === 0 ? (
+                  <p className="state-block">Нет подтвержденных данных</p>
+                ) : (
+                  data.extraction.map((item) => (
                   <div key={item.id} className="mini-metric">
                     <div className="kpi-top">
                       <StatusBadge status={item.status} />
@@ -78,7 +83,8 @@ export function ResourcesPage() {
                     <p className="kpi-period">{item.period}</p>
                     <p className="kpi-note">{item.methodology}</p>
                   </div>
-                ))}
+                  ))
+                )}
               </div>
             </article>
             <article
@@ -89,6 +95,7 @@ export function ResourcesPage() {
               data-regions-count={data.regionsRemoteCount ?? ''}
             >
               <h2>Ключевые угольные активы Казахстана</h2>
+              <p className="scope-badge">Срез каталога активов по региону и сегменту</p>
               <p className="kpi-note">
                 Справочно-аналитический каталог, а не рейтинг запасов. Показатели предприятий не заменяют
                 статистический учет запасов БНС (28,7185 млрд т на конец 2024 года).

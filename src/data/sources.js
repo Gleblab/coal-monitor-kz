@@ -38,6 +38,21 @@ export const sources = {
       'Доля угля в конечном потреблении энергии, 2025',
     ],
   },
+  bnsTeb2025Xlsx: {
+    id: 'bnsTeb2025Xlsx',
+    organization: 'Бюро национальной статистики Республики Казахстан',
+    publication:
+      'Топливно-энергетический баланс Республики Казахстан за 2025 год (электронная таблица, 1000 тнэ)',
+    period: '2025 год',
+    url: 'https://stat.gov.kz/api/iblock/element/335614/file/ru/',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Лист «3» — 1000 тнэ, national only. Секторная структура — конечное потребление энергии, не структура потребления только угля и не сегменты АЗРК.',
+    indicators: [
+      'Конечное потребление энергии, 2025',
+      'Секторы и виды топлива конечного потребления, 2025',
+    ],
+  },
   minenergo2025: {
     id: 'minenergo2025',
     organization: 'Министерство энергетики Республики Казахстан',
@@ -69,6 +84,32 @@ export const sources = {
       'Положение АО «Каражыра» и АО «Майкубен-Вест» среди основных производителей коммунально-бытового угля',
     ],
   },
+  azrkCoalMarketAnalysis2025: {
+    id: 'azrkCoalMarketAnalysis2025',
+    organization: 'Агентство по защите и развитию конкуренции Республики Казахстан',
+    publication:
+      'Официальное заключение анализа товарного рынка первичной оптовой реализации угля за 2024–2025 годы',
+    period: '2024–2025 годы',
+    url: 'https://www.gov.kz/memleket/entities/zk/documents/details/1053223?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Публичная версия заключения. Показатель HHI в опубликованном виде не раскрыт (xxxx). Не восстанавливать HHI из совокупных CR-1/CR-2.',
+    indicators: ['Анализ товарного рынка первичной оптовой реализации угля, 2024–2025'],
+  },
+  azrkCompetitionReport2024: {
+    id: 'azrkCompetitionReport2024',
+    organization: 'Агентство по защите и развитию конкуренции Республики Казахстан',
+    publication:
+      'Отчет о состоянии конкуренции на отдельных товарных рынках и принимаемых мерах по ограничению монополистической деятельности за 2024 год',
+    period: '2022–2023 годы (коммунально-бытовой сегмент, три основных производителя)',
+    url: 'https://www.gov.kz/memleket/entities/zk/documents/details/902874?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Совокупная доля трёх основных производителей коммунально-бытового угля: 2022 = 81%, 2023 = 82%. Это CR-3 другого контура, не ряд ERG + Каражыра 2024/2025.',
+    indicators: [
+      'Совокупная доля трёх основных производителей коммунально-бытового угля, 2022–2023',
+    ],
+  },
   astanaAkimat: {
     id: 'astanaAkimat',
     organization: 'Акимат города Астаны',
@@ -76,7 +117,118 @@ export const sources = {
     period: 'Значения, опубликованные акиматом в указанном сообщении',
     url: 'https://www.gov.kz/memleket/entities/astana/press/news/details/1291905?lang=ru',
     sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Один publisher-source на серию публикаций акимата. Конкретный URL среза хранится в retail_coal_observations.publication_url. Не национальная средняя.',
     indicators: ['Средние розничные цены на отдельные марки угля в г. Астана'],
+  },
+  nkoTimiryazevoCoal: {
+    id: 'nkoTimiryazevoCoal',
+    organization: 'Акимат Тимирязевского района',
+    publication: 'Официальное сообщение о наличии и стоимости угля на станции Сулы',
+    period: 'Дата публикации страницы не подтверждена metadata',
+    url: 'https://www.gov.kz/memleket/entities/zhkh-timirazevo/press/news/details/1047427?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: ['Точечные розничные цены и запасы на станции Сулы'],
+  },
+  nkoTayynshaCoal: {
+    id: 'nkoTayynshaCoal',
+    organization: 'Акимат района Тайынша',
+    publication: 'Официальное сообщение о наличии и стоимости угля в г. Тайынша',
+    period: 'Дата публикации страницы не подтверждена metadata',
+    url: 'https://www.gov.kz/memleket/entities/tayinsha-oastroy/press/news/details/1047466?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: ['Точечные розничные цены и запасы по продавцам в г. Тайынша'],
+  },
+  nkoMamlyutkaCoal: {
+    id: 'nkoMamlyutkaCoal',
+    organization: 'Акимат Мамлютского района',
+    publication: 'Официальное сообщение о наличии и стоимости угля на станции Мамлютка (06.08.2025)',
+    period: '06.08.2025 (дата наблюдения в тексте источника)',
+    url: 'https://www.gov.kz/memleket/entities/ostroy-mamlyut/press/news/details/1048717?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    notes: 'Итог 551 т не является ценовым наблюдением.',
+    indicators: ['Точечные розничные цены и запасы на станции Мамлютка'],
+  },
+  akmolaAkimatCoal: {
+    id: 'akmolaAkimatCoal',
+    organization: 'Акимат Акмолинской области',
+    publication: 'Официальное сообщение о розничных ценах на уголь по районам/городам области',
+    period: 'Дата публикации страницы не подтверждена metadata',
+    url: 'https://www.gov.kz/memleket/entities/aqmola/press/news/details/648203?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Таблица районов в Phase 9A не импортирована: страница gov.kz отдаёт SPA-заглушку, строки не восстанавливаются.',
+    indicators: ['Розничные цены по районам/городам Акмолинской области (ожидает extraction)'],
+  },
+  bnsRetailGoodsPrices: {
+    id: 'bnsRetailGoodsPrices',
+    organization: 'Бюро национальной статистики Республики Казахстан',
+    publication:
+      'Розничные цены на отдельные товары и услуги в Республике Казахстан (ежемесячные XLSX)',
+    period: 'Каталог релизов как минимум Oct 2022 — Aug 2026',
+    url: 'https://stat.gov.kz/ru/industries/economy/prices/spreadsheets/?name=19087',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'XLSX август 2026 (iblock 347970) и август 2025 (347969): нет строки «уголь каменный». Есть «Активированный уголь, 10 таблеток» и «Дрова». Не смешивать с акиматскими наблюдениями и не импортировать аптечный уголь как коммунально-бытовой.',
+    indicators: ['Каталог розничных цен CPI-корзины (уголь каменный в этом файле не найден)'],
+  },
+  bnsCoalCpi2024: {
+    id: 'bnsCoalCpi2024',
+    organization: 'Бюро национальной статистики Республики Казахстан',
+    publication: 'Публикация об изменении потребительских цен; каменный уголь +8,6% по итогам 2024 года',
+    period: '2024 год',
+    url: 'https://stat.gov.kz/ru/industries/economy/prices/publications/280679/',
+    sourceStatus: SOURCE_STATUS.official,
+    notes: '8,6% — изменение потребительских цен, не цена KZT/t и не national average из акиматов.',
+    indicators: ['Изменение потребительских цен на каменный уголь, 2024'],
+  },
+  etsShubarkol2026: {
+    id: 'etsShubarkol2026',
+    organization: 'АО «Товарная биржа «ЕТС»',
+    publication: 'График биржевых торгов коммунально-бытовым углём АО «Шубарколь Комир» на 2026 год',
+    period: '26.03.2026 (дата объявления торгов); объём — план 2026',
+    url: 'https://ets.kz/press_centre/ads/grafik-birzhevykh-torgov-kommunalno-bytovym-uglem-ao-shubarkol-komir-na-2026/',
+    sourceStatus: SOURCE_STATUS.official,
+    notes: '492 660 т — биржевой план, не розничная цена населению.',
+    indicators: ['План биржевой реализации коммунально-бытового угля Шубарколь Комир, 2026'],
+  },
+  ccxKarazhyraPlan2026: {
+    id: 'ccxKarazhyraPlan2026',
+    organization: 'АО «Товарная биржа Каспий»',
+    publication: 'Ориентировочный план поставки коммунально-бытового угля АО «Каражыра» на внутренний рынок РК на 2026 г.',
+    period: '2026 год',
+    url: 'https://prod.ccx.kz/ugol',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      '1 440 286 / 716 409 / 723 877 т — план поставок. Биржевые индексы FCA не являются розничной ценой населению.',
+    indicators: ['План поставки коммунально-бытового угля Каражыра, 2026'],
+  },
+  kaenkHouseholdCoal2026: {
+    id: 'kaenkHouseholdCoal2026',
+    organization:
+      'Комитет государственного энергетического надзора и контроля Министерства энергетики Республики Казахстан',
+    publication:
+      'Предварительные итоги Республиканского штаба по обеспечению углем коммунально-бытового сектора и населения',
+    period: 'отопительный сезон 2026–2027 (предварительная потребность)',
+    url: 'https://www.gov.kz/memleket/entities/kaenk/press/news/details/1184037?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      '7,3 млн т — предварительная потребность. 586 операторов и 951 тупик — инфраструктура. 5,7 / 1,6 млн т в этой публикации не подтверждены.',
+    indicators: [
+      'Предварительная потребность в угле, сезон 2026–2027',
+      'Число угольных операторов и железнодорожных тупиков',
+    ],
+  },
+  vkoOskemenCoal2026: {
+    id: 'vkoOskemenCoal2026',
+    organization: 'Акимат города Усть-Каменогорск',
+    publication: 'Официальное сообщение о начале продажи социального угля (отопительный сезон 2026–2027)',
+    period: 'отопительный сезон 2026–2027',
+    url: 'https://www.gov.kz/memleket/entities/vko-oskemen/press/news/details/1254435?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Коммерческие цены по продавцам. Социальная цена «на 500 ₸ ниже» не разворачивается расчётом. 30 000 т — план обеспечения, не цена.',
+    indicators: ['Коммерческие розничные цены на уголь в г. Усть-Каменогорск, сезон 2026–2027'],
   },
   bogatyrKomir: {
     id: 'bogatyrKomir',
@@ -88,6 +240,170 @@ export const sources = {
     indicators: [
       'Балансовые запасы ТОО «Богатырь Комир»',
       'Производственная мощность предприятия и разрезов «Богатырь» и «Северный»',
+    ],
+  },
+  unComtradeKazHs2701: {
+    id: 'unComtradeKazHs2701',
+    organization: 'UN Comtrade / национальная отчётность Казахстана',
+    publication: 'UN Comtrade: Kazakhstan reporter, flow export, HS 2701, annual 2023–2025',
+    period: '2023–2025, полный год',
+    url: 'https://comtradeplus.un.org/',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: ['Экспорт Казахстана HS 2701, полный год'],
+  },
+  bnsTradeYtd2026: {
+    id: 'bnsTradeYtd2026',
+    organization: 'Бюро национальной статистики Республики Казахстан',
+    publication: 'Экспорт и импорт товаров РК по 4,6,10 знакам ТН ВЭД ЕАЭС (январь-июль 2026г.)',
+    period: 'Январь–июль 2026',
+    url: 'https://stat.gov.kz/api/iblock/element/347930/file/ru/',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: ['Экспорт ТН ВЭД 2701, январь–июль 2026'],
+  },
+  bnsTradeYtd2025Wayback: {
+    id: 'bnsTradeYtd2025Wayback',
+    organization: 'Бюро национальной статистики Республики Казахстан (архивная копия публикации)',
+    publication: 'Экспорт и импорт товаров РК по 4 знакам ТН ВЭД: месячные таблицы январь–июль 2025',
+    period: 'Январь–июль 2025',
+    url: 'https://web.archive.org/web/20251023044007/https://stat.gov.kz/api/iblock/element/335723/file/ru/',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: ['Сопоставимый экспорт ТН ВЭД 2701, январь–июль 2025'],
+  },
+  ieaCoal2024: {
+    id: 'ieaCoal2024',
+    organization: 'International Energy Agency',
+    publication: 'Coal 2024 — Analysis and forecast to 2027',
+    period: 'Публикация IEA, 2024',
+    url: 'https://www.iea.org/reports/coal-2024',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: [
+      'Китай как крупнейший потребитель угля и крупнейший производитель',
+      'Индия как второй по величине мировой импортёр угля',
+    ],
+  },
+  euCoalRegions: {
+    id: 'euCoalRegions',
+    organization: 'European Commission',
+    publication: 'EU coal regions in transition',
+    period: 'Действующая политика ЕС',
+    url: 'https://energy.ec.europa.eu/topics/clean-energy-transition-initiatives/eu-coal-regions-transition_en',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: [
+      'Политика ЕС по переходу угольных регионов к чистой энергии',
+      'Сокращение использования угля в ЕС (публикация Комиссии)',
+    ],
+  },
+  ktzNetwork: {
+    id: 'ktzNetwork',
+    organization: 'АО «НК «Қазақстан темір жолы»',
+    publication: 'История национальной железнодорожной сети (официальный сайт КТЖ)',
+    period: 'Опубликованная хронология сети',
+    url: 'https://railways.kz/ru/company/istoriya/',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: [
+      'Железнодорожные линии к границе с Россией',
+      'Сухопутные железнодорожные переходы с Китаем (Дружба/Достык — Алашанькоу; Жетыген — Алтынколь)',
+      'Магистраль Оренбург–Ташкент до границы с Узбекистаном',
+    ],
+  },
+  decreeCarbonNeutral2060: {
+    id: 'decreeCarbonNeutral2060',
+    organization: 'Президент Республики Казахстан',
+    publication: 'Указ № 121 «Об утверждении Стратегии достижения углеродной нейтральности Республики Казахстан до 2060 года»',
+    period: 'Утверждена 2 февраля 2023 года; горизонт до 2060 года',
+    url: 'https://adilet.zan.kz/rus/docs/U2300000121',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: [
+      'Поэтапное снижение доли угольной генерации',
+      'Рост ВИЭ и альтернативной энергии',
+      'Природный газ как переходное топливо',
+    ],
+  },
+  primeMinisterCoalGen: {
+    id: 'primeMinisterCoalGen',
+    organization: 'Правительство Республики Казахстан / официальный ресурс Премьер-министра',
+    publication:
+      'Исполнение поручений: инвестиционные проекты суммарной установленной мощностью порядка 7,8 ГВт в угольной отрасли',
+    period: 'Нацпроект утверждён 20 марта 2026 года; горизонт 2026–2030',
+    url: 'https://primeminister.kz/ru/news/ispolnenie-porucenii-glavy-gosudarstva-planiruetsia-realizaciia-investproektov-s-ustanovlennoi-moshhnostiu-poriadka-78-gvt-v-ugolnoi-otrasli-31245',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: [
+      '8 новых объектов угольной генерации 5,3 ГВт',
+      'Модернизация 11 действующих энергоисточников 2,5 ГВт',
+    ],
+  },
+  primeMinisterCoalGenApproved: {
+    id: 'primeMinisterCoalGenApproved',
+    organization: 'Правительство Республики Казахстан / официальный ресурс Премьер-министра',
+    publication: 'Правительством утверждён Национальный проект по развитию угольной генерации',
+    period: '24 марта 2026 года; горизонт до 2030 года',
+    url: 'https://primeminister.kz/ru/news/pravitelstvom-utverzden-nacionalnyi-proekt-po-razvitiiu-ugolnoi-generacii-v-kazaxstane-31189',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: [
+      'Дополнительный спрос на энергетический уголь около 20 млн т/год к 2030',
+      'Дополнительное обеспечение полувагонами 600 ед. в сутки',
+      'Природоохранные технологии нового строительства и НДТ',
+    ],
+  },
+  ndtCoalMining: {
+    id: 'ndtCoalMining',
+    organization: 'Правительство Республики Казахстан',
+    publication:
+      'Постановление об утверждении заключений по НДТ, включая «Добыча и обогащение угля»',
+    period: '5 марта 2024 года',
+    url: 'https://adilet.zan.kz/rus/docs/P2400000159',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: ['НДТ для добычи и обогащения угля как условие КЭР'],
+  },
+  ecologicalCodeKz: {
+    id: 'ecologicalCodeKz',
+    organization: 'Республика Казахстан',
+    publication: 'Экологический кодекс Республики Казахстан',
+    period: 'Действующая редакция Кодекса',
+    url: 'https://adilet.zan.kz/rus/docs/K2100000400',
+    sourceStatus: SOURCE_STATUS.official,
+    indicators: ['Комплексные экологические разрешения', 'Наилучшие доступные техники'],
+  },
+  bnsHouseholdFuelSurvey2022: {
+    id: 'bnsHouseholdFuelSurvey2022',
+    organization: 'Бюро национальной статистики Республики Казахстан',
+    publication: 'Потребление топлива и энергии в домашних хозяйствах в Республике Казахстан, 2022 год',
+    period: '2022 год',
+    url: 'https://stat.gov.kz/ru/industries/labor-and-income/stat-ags/publications/5188/',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Выборочное обследование с распространением на генеральную совокупность. Не административный учёт 2025 и не региональный ТЭБ.',
+    indicators: [
+      'Общий объём потребления каменного угля домашними хозяйствами по регионам, 2022',
+      'Потребление каменного угля на одно домохозяйство в среднем за год, 2022',
+    ],
+  },
+  samrukEnergyAr2025MarketReview: {
+    id: 'samrukEnergyAr2025MarketReview',
+    organization: 'АО «Самрук-Энерго»',
+    publication:
+      'Годовой отчёт 2025: обзор рынка электроэнергии и угля. Таблица «Объем реализация угля потребителям, млн тонн»',
+    period: '2023–2025 годы',
+    url: 'https://ar2025.samruk-energy.kz/index/market-review.html',
+    sourceStatus: SOURCE_STATUS.company,
+    notes:
+      'Фактическая реализация угля названным потребителям. Не полный объём потребления угля региона.',
+    indicators: ['Поставки угля отдельным энергопотребителям, 2023–2025'],
+  },
+  azrkCompetition2022: {
+    id: 'azrkCompetition2022',
+    organization: 'Агентство по защите и развитию конкуренции Республики Казахстан',
+    publication:
+      'Отчет о состоянии конкуренции на отдельных товарных рынках и принимаемых мерах по ограничению монополистической деятельности за 2022 год',
+    period: '2018 год — I полугодие 2022 года; отпускные цены Богатырь Комир — август 2022 — январь 2023',
+    url: 'https://www.gov.kz/memleket/entities/zk/documents/details/486951?lang=ru',
+    sourceStatus: SOURCE_STATUS.official,
+    notes:
+      'Таблицы 8 и 11: средневзвешенные цены в тенге за 1 тонну без НДС. I пол. 2022 не является полной годовой средней. Отпускные цены Богатырь Комир публикуются отдельно и не продолжают средневзвешенный ряд. Исторический контекст 2022 (не текущий диапазон 2026): на ж/д тупиках цена коммунально-бытового угля варьировалась 9000–23000 ₸/т; средняя реализация Шубарколь-комир ~6200 ₸/т; региональные операторы ~11000–17000 ₸/т. Не рассчитывать markup без сопоставимой сделки/периода.',
+    indicators: [
+      'Средневзвешенные цены энергетического угля по предприятиям, 2018 — I пол. 2022',
+      'Средневзвешенные цены коммунально-бытового угля по предприятиям, 2018 — I пол. 2022',
+      'Отпускные цены ТОО «Богатырь Комир», август 2022 — январь 2023',
     ],
   },
   shubarkolErg: {
