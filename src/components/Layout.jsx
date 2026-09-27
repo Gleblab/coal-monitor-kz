@@ -282,10 +282,6 @@ export function Layout({ children }) {
 
   return (
     <div className={`app-shell${navOpen ? ' is-nav-open' : ''}`}>
-      <div className="info-banner" role="status">
-        Показатели основного контура сопровождаются источником, периодом и единицей измерения.
-        Неподтвержденные значения не подставляются.
-      </div>
       <header className="mobile-bar">
         <button
           type="button"
