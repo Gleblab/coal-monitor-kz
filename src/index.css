@@ -198,6 +198,7 @@ input {
   position: sticky;
   top: 0;
   z-index: 18;
+  isolation: isolate;
   display: flex;
   justify-content: flex-end;
   gap: 16px;
@@ -206,7 +207,7 @@ input {
   max-width: 100%;
   min-width: 0;
   padding: 8px 24px;
-  background: var(--bg);
+  background: #070b14;
   border-bottom: 1px solid var(--line);
 }
 
@@ -355,10 +356,9 @@ input {
   align-items: end;
   padding: 8px 24px 14px;
   border-bottom: 1px solid var(--line);
-  background: rgba(15, 22, 36, 0.92);
-  position: sticky;
-  top: 0;
-  z-index: 5;
+  background: #0f1624;
+  position: relative;
+  z-index: 0;
 }
 
 .filter-title {
