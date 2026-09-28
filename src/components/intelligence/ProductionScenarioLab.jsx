@@ -803,18 +803,18 @@ export function ProductionScenarioLab({ outlook, onRetry }) {
             </>
           ) : null}
         </div>
-        <div className="sw-foot-actions">
-          <button type="button" className="sw-text-btn" aria-expanded={panel === 'explain'} onClick={() => togglePanel('explain')}>
+        <div className="sw-foot-actions sw-sec-actions" aria-label="Дополнительные действия сценария">
+          <button type="button" className="sw-sec-action" aria-expanded={panel === 'explain'} onClick={() => togglePanel('explain')}>
             Объяснение результата
           </button>
-          <button type="button" className="sw-text-btn" aria-expanded={panel === 'method'} onClick={() => togglePanel('method')}>
+          <button type="button" className="sw-sec-action" aria-expanded={panel === 'method'} onClick={() => togglePanel('method')}>
             Как рассчитано
           </button>
-          <button type="button" className="sw-text-btn" aria-expanded={panel === 'others'} onClick={() => togglePanel('others')}>
+          <button type="button" className="sw-sec-action" aria-expanded={panel === 'others'} onClick={() => togglePanel('others')}>
             Другие сравнения
           </button>
           <Link
-            className="sw-text-btn"
+            className="sw-sec-action sw-sec-action-infra"
             to={infrastructureSearch({ producerId })}
             state={{
               infrastructureHandoff: snapshotInfrastructureHandoff({
@@ -832,6 +832,7 @@ export function ProductionScenarioLab({ outlook, onRetry }) {
             }}
           >
             Исследовать инфраструктуру
+            <span aria-hidden="true"> →</span>
           </Link>
         </div>
         <div className="sw-comparison-stage" key={`${producerId}-${lab.comparison}-${panel || 'closed'}`}>

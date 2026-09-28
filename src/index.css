@@ -9044,6 +9044,112 @@ html[data-theme='dark'] .sw-prod-cap.is-focus {
   gap: 12px;
 }
 
+.sw-sec-actions {
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sw-sec-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-subtle);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.sw-sec-action:hover {
+  color: var(--text);
+  background: var(--control-bg-hover);
+}
+
+.sw-sec-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.sw-sec-action[aria-expanded='true'] {
+  font-weight: 650;
+  box-shadow: inset 0 -2px 0 currentColor;
+}
+
+.sw-sec-action-infra {
+  font-weight: 650;
+}
+
+html[data-theme='light'] .sw-sec-action {
+  background: #f4f7fb;
+  border-color: #b7c6d8;
+  color: #243548;
+}
+
+html[data-theme='light'] .sw-sec-action:hover {
+  background: #e4ebf3;
+  border-color: #8fa4bb;
+  color: #0e3d78;
+}
+
+html[data-theme='light'] .sw-sec-action[aria-expanded='true'] {
+  background: #dceaf6;
+  border-color: #1a4e92;
+  color: #0e3d78;
+}
+
+html[data-theme='light'] .sw-sec-action-infra {
+  background: #e8eef6;
+  border-color: #1a4e92;
+  color: #0e3d78;
+}
+
+html[data-theme='light'] .sw-sec-action-infra:hover {
+  background: #dceaf6;
+}
+
+html[data-theme='dark'] .sw-sec-action {
+  background: #121c2b;
+  border-color: #2c3a52;
+  color: #c5d0e0;
+}
+
+html[data-theme='dark'] .sw-sec-action:hover {
+  background: #182233;
+  border-color: #3d4f6a;
+  color: #e7eef8;
+}
+
+html[data-theme='dark'] .sw-sec-action[aria-expanded='true'] {
+  background: #1b2a42;
+  border-color: #b08932;
+  color: #d4b56a;
+}
+
+html[data-theme='dark'] .sw-sec-action-infra {
+  background: #182233;
+  border-color: rgba(176, 137, 50, 0.55);
+  color: #e7eef8;
+}
+
+html[data-theme='dark'] .sw-sec-action-infra:hover {
+  background: #1b2a42;
+  border-color: rgba(176, 137, 50, 0.78);
+}
+
 .sw-why,
 .sw-ready {
   margin: 10px 0 0;
@@ -9253,6 +9359,7 @@ html[data-theme='light'] .sw-canvas {
 
   .sw-alloc-fill,
   .sw-q,
+  .sw-sec-action,
   .sw-cmp-btn {
     transition: none;
   }
@@ -10577,6 +10684,19 @@ html[data-theme='light'] .ci-rail {
     min-height: 44px;
     font-size: 12px;
     padding: 8px 6px;
+  }
+
+  .sw-sec-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .sw-sec-action {
+    min-height: 44px;
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 13px;
   }
 
   .outlook-page,
