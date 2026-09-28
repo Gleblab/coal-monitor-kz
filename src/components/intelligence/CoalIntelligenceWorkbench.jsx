@@ -1,0 +1,74 @@
+import { LoadErrorState } from '../ui'
+import { useScenario } from '../../context/ScenarioContext'
+import { LAB_QUESTION_IDS } from '../../lib/scenarioLab/productionSlice.js'
+import { IncrementalDemandLab } from './IncrementalDemandLab'
+import { ProductionScenarioLab } from './ProductionScenarioLab'
+
+const QUESTIONS = [
+  {
+    id: LAB_QUESTION_IDS.INCREMENTAL_DEMAND,
+    tab: 'Дополнительный спрос',
+    title: 'Какой дополнительный объём следует из выбранной доли ориентира?',
+  },
+  {
+    id: LAB_QUESTION_IDS.PRODUCTION_SCENARIO,
+    tab: 'Производство',
+    title: 'Как опубликованные факт, план, цель и заявленная мощность соотносятся между собой для выбранного производителя?',
+  },
+]
+
+export function CoalIntelligenceWorkbench({ outlook, loading, error, onRetry }) {
+  const { demandLab, setQuestionId } = useScenario()
+  const questionId = QUESTIONS.some((item) => item.id === demandLab.questionId)
+    ? demandLab.questionId
+    : LAB_QUESTION_IDS.INCREMENTAL_DEMAND
+  const active = QUESTIONS.find((item) => item.id === questionId)
+
+  if (loading) {
+    return (
+      <section className="sw is-loading" aria-busy="true" aria-label="Данные загружаются">
+        <p className="sw-kicker">Сценарий</p>
+        <span className="sk-line sk-line-kpi-value" />
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="sw">
+        <p className="sw-kicker">Сценарий</p>
+        <LoadErrorState onRetry={onRetry} />
+      </section>
+    )
+  }
+
+  return (
+    <section className="sw sw-motion-entry" id="sw-workbench" aria-labelledby="sw-title">
+      <header className="sw-head">
+        <p className="sw-kicker">Сценарий</p>
+        <div className="sw-questions sw-mode-switch" role="tablist" aria-label="Аналитический вопрос">
+          {QUESTIONS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={questionId === item.id}
+              className={`sw-q${questionId === item.id ? ' is-active' : ''}`}
+              onClick={() => setQuestionId(item.id)}
+            >
+              {item.tab}
+            </button>
+          ))}
+        </div>
+        <h2 id="sw-title">{active.title}</h2>
+      </header>
+      <div className="sw-question-stage" key={questionId}>
+        {questionId === LAB_QUESTION_IDS.PRODUCTION_SCENARIO ? (
+          <ProductionScenarioLab outlook={outlook} onRetry={onRetry} />
+        ) : (
+          <IncrementalDemandLab outlook={outlook} onRetry={onRetry} embedded />
+        )}
+      </div>
+    </section>
+  )
+}

@@ -41,7 +41,7 @@ function PriceTooltip({ active, payload, label }) {
   )
 }
 
-function WeightedChart({ pack }) {
+function WeightedChart({ pack, chart }) {
   if (!pack?.rows?.length) {
     return <NoData text="Нет подтвержденных данных по средневзвешенным ценам выбранного сегмента." />
   }
@@ -184,7 +184,7 @@ export function DynamicsPage() {
                   {chartSegment === 'household' ? 'Коммунально-бытовой уголь' : 'Энергетический уголь'}
                 </p>
               )}
-              <WeightedChart pack={weighted} />
+              <WeightedChart pack={weighted} chart={chart} />
               <p className="chart-hint">Ось Y: тенге за 1 тонну без НДС. Точки не интерполируются.</p>
             </section>
 

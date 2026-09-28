@@ -1,9 +1,12 @@
-import { getOutlook } from '../api/marketApi'
+import { loadOutlookWorkspace } from '../api/marketApi'
 import { useMarketData } from '../hooks/useMarketData'
 import { useSources } from '../context/SourceContext'
 import { TargetMonitor } from '../components/intelligence/TargetMonitor'
 import { MetricTraceButton } from '../components/traceability/MetricTraceButton'
-import { LoadErrorState, NoData, PageHeader, StateBlock, StatusBadge } from '../components/ui'
+import { LoadErrorState, NoData, StateBlock, StatusBadge } from '../components/ui'
+import { CoalIntelligenceShell } from '../components/intelligence/CoalIntelligenceShell'
+import { CoalIntelligenceWorkbench } from '../components/intelligence/CoalIntelligenceWorkbench'
+import { ScenarioReadingRail } from '../components/intelligence/ScenarioReadingRail'
 import { getChartTooltipStyle, formatNumber, formatQualifiedNumber } from '../lib/format'
 import { useChartTheme } from '../hooks/useChartTheme'
 import {
@@ -190,101 +193,33 @@ function SectionError({ error }) {
 }
 
 export function OutlookPage() {
+  return <OutlookWorkspace />
+}
+
+function OutlookWorkspace() {
   const chart = useChartTheme()
-  const { data, loading, error, reload } = useMarketData(getOutlook)
-  const generationCapacity = data?.nationalProject?.indicators.find(
+  const { data, loading, error, reload } = useMarketData(loadOutlookWorkspace)
+  const outlook = data?.outlook
+  const generationCapacity = outlook?.nationalProject?.indicators?.find(
     (item) => item.indicator_kind === 'capacity',
   )
 
   return (
     <section className="outlook-page">
-      <PageHeader
-        title="Перспективы и развитие"
-        description="Подтверждённые планы, ожидания и программы. План и ожидание не являются фактом."
+      <CoalIntelligenceWorkbench outlook={outlook} loading={loading} error={error} onRetry={reload} />
+      <CoalIntelligenceShell />
+      <p className="ci-legacy-split">Официальный мониторинг и программы</p>
+      <ScenarioReadingRail
+        outlook={outlook}
+        exportTotals={data?.exportTotals}
+        loading={loading}
+        error={error}
+        onRetry={reload}
       />
-      <StateBlock loading={loading} error={error} empty={!data} skeleton="cards" onRetry={reload}>
-        {data ? (
+      <StateBlock loading={Boolean(loading && !error)} error={null} empty={!loading && !error && !outlook} skeleton="cards" onRetry={reload}>
+        {outlook ? (
           <>
-            <section className="outlook-section outlook-hero is-exec">
-              <SectionError error={data.phase1Error.production || data.phase2Error.indicators} />
-              <div className="outlook-exec-track">
-                <article className="outlook-exec-point">
-                  <p className="outlook-year">2025</p>
-                  <StatusBadge status="ФАКТ" />
-                  {data.trajectory.actualExtraction ? (
-                    <>
-                      <p className="outlook-metric-value">
-                        {metricValue(data.trajectory.actualExtraction)}
-                        <span>{data.trajectory.actualExtraction.unit}</span>
-                        <QuietSource sourceId={data.trajectory.actualExtraction.sourceId} />
-                      </p>
-                      <p className="outlook-metric-caption">Добыча Казахстана</p>
-                      <MetricTraceButton
-                        item={data.trajectory.actualExtraction}
-                        extras={{ profileKey: 'production2025', route: '/production' }}
-                      />
-                    </>
-                  ) : (
-                    <NoData text="Нет факта добычи 2025 года." />
-                  )}
-                </article>
-                <div className="outlook-arrow" aria-hidden="true">
-                  →
-                </div>
-                <article className="outlook-exec-point">
-                  <p className="outlook-year">2026</p>
-                  <StatusBadge status="ПЛАН" />
-                  {data.trajectory.plannedExtraction ? (
-                    <>
-                      <p className="outlook-metric-value">
-                        {metricValue(data.trajectory.plannedExtraction)}
-                        <span>{data.trajectory.plannedExtraction.unit}</span>
-                        <QuietSource sourceId={data.trajectory.plannedExtraction.sourceId} />
-                      </p>
-                      <p className="outlook-metric-caption">Добыча Казахстана</p>
-                      <MetricTraceButton
-                        item={data.trajectory.plannedExtraction}
-                        extras={{ profileKey: 'plan2026', route: '/outlook', measureKind: 'plan' }}
-                      />
-                    </>
-                  ) : (
-                    <NoData text="Нет плана добычи 2026 года." />
-                  )}
-                </article>
-                <div className="outlook-arrow" aria-hidden="true">
-                  →
-                </div>
-                <article className="outlook-exec-point">
-                  <p className="outlook-year">2030+</p>
-                  <p className="outlook-stage-label">Стратегический горизонт</p>
-                  {generationCapacity ? (
-                    <>
-                      <p className="outlook-metric-value">
-                        {metricValue(generationCapacity)}
-                        <span>{generationCapacity.unit}</span>
-                        <QuietSource sourceId={generationCapacity.sourceId} />
-                      </p>
-                      <p className="outlook-metric-caption">
-                        новых и модернизированных мощностей угольной генерации
-                      </p>
-                      <MetricTraceButton
-                        item={generationCapacity}
-                        extras={{ profileKey: 'generationCapacity', route: '/outlook' }}
-                      />
-                    </>
-                  ) : (
-                    <NoData text="Нет подтвержденного показателя мощностей генерации." />
-                  )}
-                </article>
-              </div>
-              <p className="outlook-exec-line">
-                Официальные планы указывают на расширение добычи и сохранение долгосрочного спроса со
-                стороны угольной генерации, однако плановые и целевые показатели не гарантируют фактический
-                результат.
-              </p>
-            </section>
-
-            <TargetMonitor pack={data.targetMonitor} />
+            <TargetMonitor pack={outlook.targetMonitor} />
 
             <section className="outlook-section">
               <header className="outlook-section-head">
@@ -299,20 +234,20 @@ export function OutlookPage() {
               <FactorChain />
 
               <div className="outlook-exec-grid">
-                <article className="outlook-exec-card">
+                <article className="outlook-exec-card" id="outlook-production-detail" tabIndex={-1}>
                   <h3>Добыча</h3>
-                  {data.trajectory.actualExtraction ? (
+                  {outlook.trajectory.actualExtraction ? (
                     <CompactRow
-                      item={data.trajectory.actualExtraction}
+                      item={outlook.trajectory.actualExtraction}
                       caption="Факт 2025 · Минэнерго"
                       profileKey="production2025"
                     />
                   ) : (
                     <NoData text="Нет подтверждённых данных" />
                   )}
-                  {data.trajectory.plannedExtraction ? (
+                  {outlook.trajectory.plannedExtraction ? (
                     <CompactRow
-                      item={data.trajectory.plannedExtraction}
+                      item={outlook.trajectory.plannedExtraction}
                       caption="План 2026 · Минэнерго"
                       profileKey="plan2026"
                     />
@@ -324,20 +259,20 @@ export function OutlookPage() {
                   </p>
                 </article>
 
-                <article className="outlook-exec-card">
+                <article className="outlook-exec-card" id="outlook-energy-demand-detail" tabIndex={-1}>
                   <h3>Будущий спрос</h3>
-                  {data.industryOutlook.additionalDemand ? (
+                  {outlook.industryOutlook.additionalDemand ? (
                     <CompactRow
-                      item={data.industryOutlook.additionalDemand}
+                      item={outlook.industryOutlook.additionalDemand}
                       caption="дополнительный спрос на энергетический уголь к 2030 году"
                       profileKey="demand2030"
                     />
                   ) : (
                     <NoData text="Нет подтвержденного показателя дополнительного спроса." />
                   )}
-                  {data.industryOutlook.energyNeed ? (
+                  {outlook.industryOutlook.energyNeed ? (
                     <CompactRow
-                      item={data.industryOutlook.energyNeed}
+                      item={outlook.industryOutlook.energyNeed}
                       caption="потребность для новых энергетических проектов к 2032 году"
                       profileKey="demand2032"
                     />
@@ -351,14 +286,14 @@ export function OutlookPage() {
 
                 <article className="outlook-exec-card">
                   <h3>Инвестиции</h3>
-                  {data.trajectory.investmentFact ? (
-                    <CompactRow item={data.trajectory.investmentFact} caption="Факт 2025" profileKey="invest2025" />
+                  {outlook.trajectory.investmentFact ? (
+                    <CompactRow item={outlook.trajectory.investmentFact} caption="Факт 2025" profileKey="invest2025" />
                   ) : (
                     <NoData text="Нет подтверждённых данных" />
                   )}
-                  {data.trajectory.investmentExpectation ? (
+                  {outlook.trajectory.investmentExpectation ? (
                     <CompactRow
-                      item={data.trajectory.investmentExpectation}
+                      item={outlook.trajectory.investmentExpectation}
                       caption="Ожидание / план 2026"
                       profileKey="invest2026"
                     />
@@ -372,9 +307,9 @@ export function OutlookPage() {
 
                 <article className="outlook-exec-card">
                   <h3>Расширение сырьевой базы</h3>
-                  {data.industryOutlook.coalPlots ? (
+                  {outlook.industryOutlook.coalPlots ? (
                     <CompactRow
-                      item={data.industryOutlook.coalPlots}
+                      item={outlook.industryOutlook.coalPlots}
                       caption="планируется выставить на аукцион до конца 2026 года"
                       profileKey="coalPlots"
                     />
@@ -391,29 +326,29 @@ export function OutlookPage() {
                   <p className="outlook-kicker">Кейс производителя</p>
                   <h2>Богатырь Комир</h2>
                 </div>
-                {data.bogatyrCase.program ? (
+                {outlook.bogatyrCase.program ? (
                   <div className="outlook-stage-meta">
-                    <StatusBadge status={data.bogatyrCase.program.status} />
-                    <span className="kpi-period">{data.bogatyrCase.program.horizon}</span>
+                    <StatusBadge status={outlook.bogatyrCase.program.status} />
+                    <span className="kpi-period">{outlook.bogatyrCase.program.horizon}</span>
                   </div>
                 ) : null}
               </header>
-              {data.bogatyrCase.actual || data.bogatyrCase.plan || data.bogatyrCase.target ? (
+              {outlook.bogatyrCase.actual || outlook.bogatyrCase.plan || outlook.bogatyrCase.target ? (
                 <>
                   <div className="outlook-kpi-row">
-                    {data.bogatyrCase.actual ? (
-                      <OutlookMetric item={data.bogatyrCase.actual} caption="Добыча 2024" showStatus profileKey="bogatyrActual" />
+                    {outlook.bogatyrCase.actual ? (
+                      <OutlookMetric item={outlook.bogatyrCase.actual} caption="Добыча 2024" showStatus profileKey="bogatyrActual" />
                     ) : (
                       <NoData text="Нет факта добычи Богатыря за 2024 год." />
                     )}
-                    {data.bogatyrCase.plan ? (
-                      <OutlookMetric item={data.bogatyrCase.plan} caption="План добычи 2026" showStatus profileKey="bogatyrPlan" />
+                    {outlook.bogatyrCase.plan ? (
+                      <OutlookMetric item={outlook.bogatyrCase.plan} caption="План добычи 2026" showStatus profileKey="bogatyrPlan" />
                     ) : (
                       <NoData text="Нет плана добычи Богатыря на 2026 год." />
                     )}
-                    {data.bogatyrCase.target ? (
+                    {outlook.bogatyrCase.target ? (
                       <OutlookMetric
-                        item={data.bogatyrCase.target}
+                        item={outlook.bogatyrCase.target}
                         caption="Целевой показатель 2032"
                         showStatus
                         profileKey="bogatyrTarget"
@@ -422,25 +357,25 @@ export function OutlookPage() {
                       <NoData text="Нет целевого показателя Богатыря на 2032 год." />
                     )}
                   </div>
-                  {data.bogatyrCase.actual && data.bogatyrCase.plan && data.bogatyrCase.target ? (
+                  {outlook.bogatyrCase.actual && outlook.bogatyrCase.plan && outlook.bogatyrCase.target ? (
                     <div className="chart-box outlook-chart is-compact">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart
                           data={[
                             {
-                              year: data.bogatyrCase.actual.period,
-                              value: data.bogatyrCase.actual.value,
-                              status: data.bogatyrCase.actual.status,
+                              year: outlook.bogatyrCase.actual.period,
+                              value: outlook.bogatyrCase.actual.value,
+                              status: outlook.bogatyrCase.actual.status,
                             },
                             {
-                              year: data.bogatyrCase.plan.period,
-                              value: data.bogatyrCase.plan.value,
-                              status: data.bogatyrCase.plan.status,
+                              year: outlook.bogatyrCase.plan.period,
+                              value: outlook.bogatyrCase.plan.value,
+                              status: outlook.bogatyrCase.plan.status,
                             },
                             {
-                              year: data.bogatyrCase.target.period,
-                              value: data.bogatyrCase.target.value,
-                              status: data.bogatyrCase.target.status,
+                              year: outlook.bogatyrCase.target.period,
+                              value: outlook.bogatyrCase.target.value,
+                              status: outlook.bogatyrCase.target.status,
                             },
                           ]}
                           margin={{ top: 28, right: 18, left: 4, bottom: 8 }}
@@ -478,16 +413,16 @@ export function OutlookPage() {
                     Три официальные контрольные точки 2024 / 2026 / 2032. Промежуточные годы не рассчитывались и
                     не добавлялись.
                   </p>
-                  {data.bogatyrCase.capacity ? (
+                  {outlook.bogatyrCase.capacity ? (
                     <p className="outlook-hint">
-                      Отдельно: {metricValue(data.bogatyrCase.capacity)} {data.bogatyrCase.capacity.unit} —
+                      Отдельно: {metricValue(outlook.bogatyrCase.capacity)} {outlook.bogatyrCase.capacity.unit} —
                       заявленная производственная мощность из отдельного корпоративного источника.{' '}
-                      <QuietSource sourceId={data.bogatyrCase.capacity.sourceId} />
+                      <QuietSource sourceId={outlook.bogatyrCase.capacity.sourceId} />
                     </p>
                   ) : null}
-                  {data.bogatyrCase.investment ? (
+                  {outlook.bogatyrCase.investment ? (
                     <OutlookMetric
-                      item={data.bogatyrCase.investment}
+                      item={outlook.bogatyrCase.investment}
                       caption="Инвестиционная программа до 2032 года"
                       showStatus
                       profileKey="bogatyrInvestment"
@@ -496,11 +431,11 @@ export function OutlookPage() {
                     <NoData text="Нет инвестиционной программы Богатыря." />
                   )}
                   <p className="outlook-kicker outlook-kicker-inline">Меры программы</p>
-                  {data.bogatyrCase.measures.length === 0 ? (
+                  {outlook.bogatyrCase.measures.length === 0 ? (
                     <NoData text="Нет подтвержденных мер Богатыря." />
                   ) : (
                     <ul className="outlook-measure-list is-compact">
-                      {data.bogatyrCase.measures.map((item) => (
+                      {outlook.bogatyrCase.measures.map((item) => (
                         <li key={item.id}>
                           <h3>{item.name}</h3>
                         </li>
@@ -513,7 +448,7 @@ export function OutlookPage() {
               )}
             </section>
 
-            <section className="outlook-section">
+            <section className="outlook-section" id="outlook-rail-detail" tabIndex={-1}>
               <header className="outlook-section-head">
                 <div>
                   <p className="outlook-kicker">Инфраструктура</p>
@@ -521,9 +456,9 @@ export function OutlookPage() {
                 </div>
               </header>
               <div className="outlook-logistics">
-                {data.industryOutlook.gondolas ? (
+                {outlook.industryOutlook.gondolas ? (
                   <OutlookMetric
-                    item={data.industryOutlook.gondolas}
+                    item={outlook.industryOutlook.gondolas}
                     caption="Дополнительное обеспечение полувагонами для будущей перевозочной потребности"
                     showStatus
                     profileKey="gondolas"
@@ -531,11 +466,11 @@ export function OutlookPage() {
                 ) : (
                   <NoData text="Нет подтвержденного показателя по полувагонам." />
                 )}
-                {data.industryOutlook.railMeasure ? (
+                {outlook.industryOutlook.railMeasure ? (
                   <article className="outlook-chip outlook-chip-inline">
-                    <h3>{data.industryOutlook.railMeasure.name}</h3>
+                    <h3>{outlook.industryOutlook.railMeasure.name}</h3>
                     <p>Качественная мера. Бюджет в подтверждённых данных не выделен.</p>
-                    <QuietSource sourceId={data.industryOutlook.railMeasure.sourceId} />
+                    <QuietSource sourceId={outlook.industryOutlook.railMeasure.sourceId} />
                   </article>
                 ) : null}
               </div>
@@ -549,7 +484,7 @@ export function OutlookPage() {
                 </div>
               </header>
               <div className="outlook-insight-grid">
-                <article className="outlook-insight">
+                <article className="outlook-insight" id="outlook-constraints-detail" tabIndex={-1}>
                   <h3>Добыча</h3>
                   <p>План на 2026 год выше фактического уровня 2025 года.</p>
                 </article>
@@ -582,22 +517,22 @@ export function OutlookPage() {
                 <div>
                   <p className="outlook-kicker">Национальный проект</p>
                   <h2>
-                    {data.nationalProject?.program.name || 'Национальный проект генерации'}
+                    {outlook.nationalProject?.program.name || 'Национальный проект генерации'}
                   </h2>
                 </div>
-                {data.nationalProject ? (
+                {outlook.nationalProject ? (
                   <div className="outlook-stage-meta">
-                    <StatusBadge status={data.nationalProject.program.status} />
-                    <span className="kpi-period">{data.nationalProject.program.horizon}</span>
-                    <QuietSource sourceId={data.nationalProject.program.sourceId} />
+                    <StatusBadge status={outlook.nationalProject.program.status} />
+                    <span className="kpi-period">{outlook.nationalProject.program.horizon}</span>
+                    <QuietSource sourceId={outlook.nationalProject.program.sourceId} />
                   </div>
                 ) : null}
               </header>
-              <SectionError error={data.phase2Error.projects} />
-              {data.nationalProject ? (
+              <SectionError error={outlook.phase2Error.projects} />
+              {outlook.nationalProject ? (
                 <>
                   <div className="outlook-mini-kpis">
-                    {data.nationalProject.indicators.map((item) => (
+                    {outlook.nationalProject.indicators.map((item) => (
                       <OutlookMetric
                         key={item.id}
                         item={item}
@@ -614,14 +549,14 @@ export function OutlookPage() {
                     ))}
                   </div>
                   <h3>Новые электростанции</h3>
-                  {data.nationalProject.projects.length === 0 ? (
+                  {outlook.nationalProject.projects.length === 0 ? (
                     <NoData text="Нет подтвержденных данных по новым объектам генерации." />
                   ) : (
                     <>
                       <div className="chart-box outlook-chart is-national">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart
-                            data={data.nationalProject.projects.filter((item) => item.capacity_mw != null)}
+                            data={outlook.nationalProject.projects.filter((item) => item.capacity_mw != null)}
                             layout="vertical"
                             margin={{ top: 4, right: 48, left: 4, bottom: 4 }}
                           >
@@ -670,7 +605,7 @@ export function OutlookPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {data.nationalProject.projects.map((item) => (
+                            {outlook.nationalProject.projects.map((item) => (
                               <tr key={item.id}>
                                 <td>{item.name}</td>
                                 <td>{item.location_name || '—'}</td>
@@ -698,62 +633,62 @@ export function OutlookPage() {
                 <div>
                   <p className="outlook-kicker">Шубарколь</p>
                   <h2>
-                    {data.producerCase.program?.companyName ||
-                      data.producerCase.program?.name ||
+                    {outlook.producerCase.program?.companyName ||
+                      outlook.producerCase.program?.name ||
                       'Кейс производителя'}
                   </h2>
                 </div>
-                {data.producerCase.program ? (
+                {outlook.producerCase.program ? (
                   <div className="outlook-stage-meta">
-                    <StatusBadge status={data.producerCase.program.status} />
-                    <span className="kpi-period">{data.producerCase.program.horizon}</span>
-                    <QuietSource sourceId={data.producerCase.program.sourceId} />
+                    <StatusBadge status={outlook.producerCase.program.status} />
+                    <span className="kpi-period">{outlook.producerCase.program.horizon}</span>
+                    <QuietSource sourceId={outlook.producerCase.program.sourceId} />
                   </div>
                 ) : null}
               </header>
-              {!data.producerCase.program ? (
+              {!outlook.producerCase.program ? (
                 <NoData text="Нет подтвержденной инвестиционной стратегии предприятия." />
               ) : null}
               <div className="outlook-kpi-row two">
-                {data.producerCase.plan ? (
-                  <OutlookMetric item={data.producerCase.plan} caption="План добычи 2026" />
+                {outlook.producerCase.plan ? (
+                  <OutlookMetric item={outlook.producerCase.plan} caption="План добычи 2026" />
                 ) : (
                   <NoData text="Нет плана добычи предприятия." />
                 )}
-                {data.producerCase.capacity ? (
-                  <OutlookMetric item={data.producerCase.capacity} caption="Производственная мощность" />
+                {outlook.producerCase.capacity ? (
+                  <OutlookMetric item={outlook.producerCase.capacity} caption="Производственная мощность" />
                 ) : (
                   <NoData text="Нет указанной производственной мощности предприятия." />
                 )}
               </div>
-              {data.producerCase.plan && data.producerCase.capacity ? (
+              {outlook.producerCase.plan && outlook.producerCase.capacity ? (
                 <p className="outlook-hint">
-                  {metricValue(data.producerCase.plan)} {data.producerCase.plan.unit} — план добычи на{' '}
-                  {data.producerCase.plan.period} год. {metricValue(data.producerCase.capacity)}{' '}
-                  {data.producerCase.capacity.unit} — указанная производственная мощность. Метрики не
+                  {metricValue(outlook.producerCase.plan)} {outlook.producerCase.plan.unit} — план добычи на{' '}
+                  {outlook.producerCase.plan.period} год. {metricValue(outlook.producerCase.capacity)}{' '}
+                  {outlook.producerCase.capacity.unit} — указанная производственная мощность. Метрики не
                   суммируются.
                 </p>
               ) : null}
-              {data.producerCase.investmentParent ? (
+              {outlook.producerCase.investmentParent ? (
                 <div className="outlook-invest">
                   <OutlookMetric
-                    item={data.producerCase.investmentParent}
+                    item={outlook.producerCase.investmentParent}
                     caption="Инвестиционная стратегия"
                   />
                   <CompositionBar
-                    parent={data.producerCase.investmentParent}
-                    parts={data.producerCase.investmentParts}
+                    parent={outlook.producerCase.investmentParent}
+                    parts={outlook.producerCase.investmentParts}
                   />
                 </div>
               ) : (
                 <NoData text="Нет подтвержденных инвестиционных показателей стратегии." />
               )}
               <h3>Технологические меры</h3>
-              {data.producerCase.measures.length === 0 ? (
+              {outlook.producerCase.measures.length === 0 ? (
                 <NoData text="Нет подтвержденных мер предприятия." />
               ) : (
                 <ul className="outlook-measure-list is-compact">
-                  {data.producerCase.measures.map((item) => (
+                  {outlook.producerCase.measures.map((item) => (
                     <li key={item.id}>
                       <h3>{item.name}</h3>
                       {publicCopy(item.description) ? (
@@ -769,31 +704,31 @@ export function OutlookPage() {
               <header className="outlook-section-head">
                 <div>
                   <p className="outlook-kicker">Отопительный сезон</p>
-                  <h2>{data.heating?.program.name || 'Отопительный сезон'}</h2>
+                  <h2>{outlook.heating?.program.name || 'Отопительный сезон'}</h2>
                 </div>
-                {data.heating ? (
+                {outlook.heating ? (
                   <div className="outlook-stage-meta">
                     <StatusBadge status="СЕЗОННАЯ ПОТРЕБНОСТЬ" />
-                    <span className="kpi-period">{data.heating.program.horizon}</span>
-                    <QuietSource sourceId={data.heating.program.sourceId} />
+                    <span className="kpi-period">{outlook.heating.program.horizon}</span>
+                    <QuietSource sourceId={outlook.heating.program.sourceId} />
                   </div>
                 ) : null}
               </header>
-              <SectionError error={data.phase2Error.indicators} />
-              {data.heating ? (
+              <SectionError error={outlook.phase2Error.indicators} />
+              {outlook.heating ? (
                 <>
                   <p className="outlook-lead">
                     Потребность населения и коммунально-бытового сектора на отопительный сезон; не общий
                     внутренний рынок.
                   </p>
-                  {data.heating.total ? (
-                    <OutlookMetric item={data.heating.total} caption="Общая потребность" />
+                  {outlook.heating.total ? (
+                    <OutlookMetric item={outlook.heating.total} caption="Общая потребность" />
                   ) : (
                     <NoData text="Нет общей сезонной потребности." />
                   )}
                   <p className="outlook-kicker outlook-kicker-inline">Инфраструктура реализации</p>
                   <div className="outlook-kpi-row two outlook-infra">
-                    {data.heating.infrastructure.map((item) => (
+                    {outlook.heating.infrastructure.map((item) => (
                       <OutlookMetric key={item.id} item={item} />
                     ))}
                   </div>
@@ -808,29 +743,29 @@ export function OutlookPage() {
                 <div>
                   <p className="outlook-kicker">Углехимия</p>
                   <h2>
-                    {data.chemistry
-                      ? `Направления развития ${data.chemistry.program.horizon}`
+                    {outlook.chemistry
+                      ? `Направления развития ${outlook.chemistry.program.horizon}`
                       : 'Направления развития'}
                   </h2>
                 </div>
-                {data.chemistry ? (
+                {outlook.chemistry ? (
                   <div className="outlook-stage-meta">
-                    <StatusBadge status={data.chemistry.program.status} />
-                    <QuietSource sourceId={data.chemistry.program.sourceId} />
+                    <StatusBadge status={outlook.chemistry.program.status} />
+                    <QuietSource sourceId={outlook.chemistry.program.sourceId} />
                   </div>
                 ) : null}
               </header>
-              <SectionError error={data.phase2Error.directions} />
-              {data.chemistry ? (
+              <SectionError error={outlook.phase2Error.directions} />
+              {outlook.chemistry ? (
                 <>
                   <p className="outlook-lead">
                     Стратегические направления глубокой переработки; количественные прогнозы не указаны.
                   </p>
-                  {data.chemistry.directions.length === 0 ? (
+                  {outlook.chemistry.directions.length === 0 ? (
                     <NoData text="Нет подтвержденных направлений углехимии." />
                   ) : (
                     <div className="chemistry-grid">
-                      {data.chemistry.directions.map((item) => (
+                      {outlook.chemistry.directions.map((item) => (
                         <article key={item.id} className="outlook-chip">
                           <h3>{item.name}</h3>
                           {item.description ? <p>{item.description}</p> : null}
@@ -839,11 +774,11 @@ export function OutlookPage() {
                     </div>
                   )}
                   <h3>Подтверждённая мера</h3>
-                  {data.chemistry.measures.length === 0 ? (
+                  {outlook.chemistry.measures.length === 0 ? (
                     <NoData text="Нет подтвержденных мер дорожной карты." />
                   ) : (
                     <ul className="outlook-measure-list is-compact">
-                      {data.chemistry.measures.map((item) => (
+                      {outlook.chemistry.measures.map((item) => (
                         <li key={item.id}>
                           <h3>{item.name}</h3>
                           {publicCopy(item.description) ? (

@@ -165,6 +165,7 @@ function FilterBar({ children }) {
       .catch(() => setMeta({ regions: catalogRegions, coalTypes: catalogCoalTypes }))
   }, [])
 
+  const outlookPage = location.pathname === '/outlook'
   const showRegion = capability.region
   const showSegment = capability.segment
   const showReset = showRegion || showSegment
@@ -178,6 +179,18 @@ function FilterBar({ children }) {
   const activeSlice = energyRolePage
     ? energySliceLabel(region, segmentValue)
     : sliceLabel(region, coalType)
+
+  if (outlookPage) {
+    return (
+      <section className="filter-bar is-ci-page" aria-label="Срез страницы">
+        <div className="filter-title">
+          <span>Глобальный срез</span>
+          <small>Не применяется к сценарию · срез задаётся инструментом ниже</small>
+        </div>
+        {children}
+      </section>
+    )
+  }
 
   return (
     <section className="filter-bar" aria-label="Фильтры по регионам и типам угля">

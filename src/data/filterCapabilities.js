@@ -33,7 +33,7 @@ const CAPABILITIES = {
   '/outlook': {
     region: false,
     segment: false,
-    reason: 'Перспективы и программа генерации заданы nationally, без регионального ТЭБ.',
+    reason: 'Перспективы и программа генерации заданы на национальном уровне, без регионального ТЭБ.',
   },
   '/concentration': {
     region: false,
@@ -44,7 +44,7 @@ const CAPABILITIES = {
     region: false,
     segment: true,
     reason:
-      'Накопленный рост 2022–2025 и исторические средневзвешенные цены АЗРК заданы nationally по сегментам, без регионального ряда.',
+      'Накопленный рост 2022–2025 и исторические средневзвешенные цены АЗРК заданы на национальном уровне по сегментам, без регионального ряда.',
   },
   '/retail': {
     region: true,
@@ -70,7 +70,7 @@ const CAPABILITIES = {
   '/constraints': {
     region: false,
     segment: false,
-    reason: 'Ограничения и задачи описаны nationally.',
+    reason: 'Ограничения и задачи описаны на национальном уровне.',
   },
 }
 
@@ -83,8 +83,9 @@ export function getFilterCapability(pathname, filters = {}) {
         'Сектор ТЭБ БНС и сегменты АЗРК не применяются к региональному энергетическому профилю. Независимые наблюдения не фильтруются по сегменту.',
     }
   }
+  const route = pathname.startsWith('/outlook') ? '/outlook' : pathname
   return (
-    CAPABILITIES[pathname] || {
+    CAPABILITIES[route] || {
       region: false,
       segment: false,
       reason: 'Для этого раздела срез region/segment не применяется.',

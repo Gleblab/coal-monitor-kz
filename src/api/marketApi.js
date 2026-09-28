@@ -586,6 +586,50 @@ export async function getOutlook() {
       row.coal_asset?.code === 'bogatyr-company' && row.measure_kind === 'capacity',
   )
 
+  const shubarkolActuals = productionRows.filter(
+    (row) =>
+      row.company?.code === 'shubarkol-komir' &&
+      row.coal_asset?.code === 'shubarkol-company' &&
+      row.measure_kind === 'actual' &&
+      row.unit === 'млн т' &&
+      typeof row.year === 'number',
+  )
+  const shubarkolHistoricalActuals = shubarkolActuals
+    .filter((row) => row.year < 2024)
+    .sort((a, b) => b.year - a.year)
+
+  const karazhyraActuals = productionRows.filter(
+    (row) =>
+      row.company?.code === 'karazhyra' &&
+      row.measure_kind === 'actual' &&
+      row.unit === 'млн т' &&
+      typeof row.year === 'number',
+  )
+  const karazhyraActualCanonical = pickPreferredSeries(karazhyraActuals.filter((row) => row.year === 2024))
+  const karazhyraHistoricalActuals = karazhyraActuals
+    .filter((row) => row.year < 2024)
+    .sort((a, b) => b.year - a.year)
+
+  const maikubenActuals = productionRows.filter(
+    (row) =>
+      row.company?.code === 'maikuben-west' &&
+      row.measure_kind === 'actual' &&
+      row.unit === 'млн т' &&
+      typeof row.year === 'number',
+  )
+  const maikubenActualCanonical = pickPreferredSeries(maikubenActuals.filter((row) => row.year === 2024))
+  const maikubenHistoricalActuals = maikubenActuals
+    .filter((row) => row.year < 2024)
+    .sort((a, b) => b.year - a.year)
+  const maikubenCapacity = pickPreferredSeries(
+    productionRows.filter(
+      (row) =>
+        row.company?.code === 'maikuben-west' &&
+        row.coal_asset?.code === 'maikuben-pit' &&
+        row.measure_kind === 'capacity',
+    ),
+  )
+
   const investmentFact = industryRows.find(
     (row) =>
       row.year === 2025 &&
@@ -808,6 +852,13 @@ export async function getOutlook() {
           : null,
         note: 'Указанная производственная мощность в источнике этапа 1. Не план добычи.',
       }),
+      actualHistorical: shubarkolHistoricalActuals.map((row) =>
+        mapOutlookMetric(row, {
+          status: 'ФАКТ',
+          period: String(row.year),
+          note: 'Историческая фактическая добыча. Не канонический факт для сравнения с планом 2026 года.',
+        }),
+      ),
       investmentParent: mapOutlookMetric(investmentParent, {
         status: shubarkolProgram ? roleFromProgram(shubarkolProgram) : 'ПЛАН',
         period: shubarkolProgram ? programHorizon(shubarkolProgram) : null,
@@ -830,6 +881,11 @@ export async function getOutlook() {
         period: bogatyrActual2024 ? String(bogatyrActual2024.year) : null,
         note: 'Фактическая добыча. Не производственная мощность.',
       }),
+      actualLatest: mapOutlookMetric(bogatyrActualLatest, {
+        status: 'ФАКТ',
+        period: bogatyrActualLatest ? String(bogatyrActualLatest.year) : null,
+        note: 'Последний подтверждённый факт добычи этого контура. Не мощность и не план. Ряд мониторинга 2024 остаётся отдельным.',
+      }),
       plan: mapOutlookMetric(bogatyrPlan2026, {
         status: 'ПЛАН',
         period: bogatyrPlan2026 ? String(bogatyrPlan2026.year) : null,
@@ -851,6 +907,59 @@ export async function getOutlook() {
         note: bogatyrInvestment?.methodology_note,
       }),
       measures: bogatyrMeasures.map(mapOutlookMeasure),
+    },
+    karazhyraCase: {
+      actual: mapOutlookMetric(karazhyraActualCanonical, {
+        status: 'ФАКТ',
+        period: karazhyraActualCanonical ? String(karazhyraActualCanonical.year) : null,
+        note: 'Фактическая добыча АО «Каражыра». Не продажа и не заявленная мощность.',
+      }),
+      actualLatest: mapOutlookMetric(karazhyraActualCanonical, {
+        status: 'ФАКТ',
+        period: karazhyraActualCanonical ? String(karazhyraActualCanonical.year) : null,
+        note: 'Канонический факт: полный год 2024. Не мощность «7,5–8».',
+      }),
+      actualHistorical: karazhyraHistoricalActuals.map((row) =>
+        mapOutlookMetric(row, {
+          status: 'ФАКТ',
+          period: String(row.year),
+          note: 'Историческая фактическая добыча. Не канонический факт текущего сравнения.',
+        }),
+      ),
+      plan: null,
+      target: null,
+      capacity: null,
+    },
+    maikubenCase: {
+      actual: mapOutlookMetric(maikubenActualCanonical, {
+        status: 'ФАКТ',
+        period: maikubenActualCanonical ? String(maikubenActualCanonical.year) : null,
+        note: 'Фактическая добыча АО «Майкубен-Вест» за 2024 год. Не мощность 5,2.',
+      }),
+      actualLatest: mapOutlookMetric(maikubenActualCanonical, {
+        status: 'ФАКТ',
+        period: maikubenActualCanonical ? String(maikubenActualCanonical.year) : null,
+        note: 'Канонический факт: полный год 2024. Ряд 2025 не принимается без годового отчёта эмитента с показателем добычи.',
+      }),
+      actualHistorical: maikubenHistoricalActuals.map((row) =>
+        mapOutlookMetric(row, {
+          status: 'ФАКТ',
+          period: String(row.year),
+          note:
+            row.series_role === 'original'
+              ? 'Конфликт 2023: original 3,8 (отчёт 2023). Не канонический факт.'
+              : row.series_role === 'revised'
+                ? 'Конфликт 2023: revised 4,0 (ретроспектива отчёта 2024). Не канонический факт.'
+                : 'Историческая фактическая добыча. Не канонический факт.',
+        }),
+      ),
+      plan: null,
+      target: null,
+      capacity: mapOutlookMetric(maikubenCapacity, {
+        status: 'Данные предприятия',
+        period: null,
+        note: 'Проектная мощность разреза по годовому отчёту 2024. Не факт добычи.',
+      }),
     },
     heating: heatingProgram
       ? {
@@ -923,6 +1032,7 @@ function mapOutlookMetric(row, extras = {}) {
     label: extras.label || row.name || row.indicator,
     value: row.value,
     unit: row.unit,
+    year: row.year ?? null,
     period: extras.period || null,
     status: extras.status,
     sourceId: row.source?.code || null,
@@ -930,10 +1040,13 @@ function mapOutlookMetric(row, extras = {}) {
     approx: Boolean(row.is_approximate),
     note: extras.note || row.methodology_note || row.notes || null,
     company_id: row.company_id || null,
+    company_code: row.company?.code || extras.company_code || null,
+    coal_asset_code: row.coal_asset?.code || extras.coal_asset_code || null,
     program_id: row.program_id || null,
     parent_indicator_id: extras.parentId || row.parent_indicator_id || null,
     indicator_kind: row.indicator_kind || null,
     measure_kind: row.measure_kind || null,
+    series_role: row.series_role || null,
     value_qualifier: row.value_qualifier || (row.is_approximate ? 'about' : 'exact'),
   }
 }
@@ -3511,6 +3624,11 @@ export async function getExportPeriodComparison(currentPeriodId, previousPeriodI
   }
 }
 
+export async function loadOutlookWorkspace() {
+  const [outlook, exportTotals] = await Promise.all([getOutlook(), getExportAnnualTotals()])
+  return { outlook, exportTotals }
+}
+
 export async function getExportConcentration(periodId) {
   const byCountry = await getExportByCountry(periodId)
   if (!byCountry.ok) return byCountry
@@ -3619,3 +3737,4 @@ getExportAnnualTotals.searchRemoteKey = 'exportTotals'
 getExportByCountry.searchRemoteKey = 'exportPartners'
 
 export { sources }
+export { loadInfrastructureGraph } from '../services/infrastructureService.js'

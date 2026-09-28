@@ -1,5 +1,8 @@
 import { coalTypes, energySectors, regions } from '../data/catalog'
 import { getChartTooltipStyle as readChartTooltipStyle } from './theme'
+import { formatNumber, formatQualifiedNumber, valueQualifierPrefix } from './formatCore.js'
+
+export { formatNumber, formatQualifiedNumber, valueQualifierPrefix }
 
 export function labelById(list, id) {
   return list.find((item) => item.id === id)?.name ?? id
@@ -42,29 +45,6 @@ export function formatEnergyKtoe(ktoe, digits = 2) {
     detail: formatNumber(ktoe, digits),
     unitDetail: 'тыс. тнэ',
   }
-}
-
-export function formatNumber(value, digits) {
-  if (typeof value !== 'number' || Number.isNaN(value)) return '—'
-  const resolved =
-    digits === undefined ? (String(value).split('.')[1]?.length ?? 0) : digits
-  return value.toLocaleString('ru-RU', {
-    minimumFractionDigits: resolved,
-    maximumFractionDigits: resolved,
-  })
-}
-
-export function valueQualifierPrefix(qualifier, approx = false) {
-  if (qualifier === 'about') return '≈ '
-  if (qualifier === 'more_than') return '> '
-  if (qualifier === 'less_than') return '< '
-  if (qualifier === 'exact') return ''
-  return approx ? '≈ ' : ''
-}
-
-export function formatQualifiedNumber(value, qualifier, approx = false, digits) {
-  if (typeof value !== 'number' || Number.isNaN(value)) return '—'
-  return `${valueQualifierPrefix(qualifier, approx)}${formatNumber(value, digits)}`
 }
 
 export function getChartTooltipStyle() {

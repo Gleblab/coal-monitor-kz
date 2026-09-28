@@ -15,6 +15,7 @@ const VARIANT_BY_PATH = {
 }
 
 export function getPageSkeletonVariant(pathname) {
+  if (pathname.startsWith('/outlook')) return 'content'
   return VARIANT_BY_PATH[pathname] || 'dashboard'
 }
 

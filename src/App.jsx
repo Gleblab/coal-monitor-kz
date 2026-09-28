@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { getPageSkeletonVariant, PageSkeleton } from './components/PageSkeleton'
+import { ScenarioProvider } from './context/ScenarioContext'
 
 const OverviewPage = lazy(() =>
   import('./pages/OverviewPage').then((module) => ({ default: module.OverviewPage })),
@@ -20,6 +21,11 @@ const GeographyPage = lazy(() =>
 )
 const OutlookPage = lazy(() =>
   import('./pages/OutlookPage').then((module) => ({ default: module.OutlookPage })),
+)
+const InfrastructureIntelligencePage = lazy(() =>
+  import('./pages/InfrastructureIntelligencePage').then((module) => ({
+    default: module.InfrastructureIntelligencePage,
+  })),
 )
 const ConcentrationPage = lazy(() =>
   import('./pages/ConcentrationPage').then((module) => ({ default: module.ConcentrationPage })),
@@ -50,6 +56,7 @@ function PageFallback() {
 
 export default function App() {
   return (
+    <ScenarioProvider>
     <Layout>
       <Suspense fallback={<PageFallback />}>
         <Routes>
@@ -59,6 +66,7 @@ export default function App() {
           <Route path="/production" element={<ProductionPage />} />
           <Route path="/geography" element={<GeographyPage />} />
           <Route path="/outlook" element={<OutlookPage />} />
+          <Route path="/outlook/infrastructure" element={<InfrastructureIntelligencePage />} />
           <Route path="/concentration" element={<ConcentrationPage />} />
           <Route path="/dynamics" element={<DynamicsPage />} />
           <Route path="/retail" element={<RetailPage />} />
@@ -74,5 +82,6 @@ export default function App() {
         </Routes>
       </Suspense>
     </Layout>
+    </ScenarioProvider>
   )
 }
