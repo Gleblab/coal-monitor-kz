@@ -17,6 +17,10 @@ const QUESTIONS = [
   },
 ]
 
+function SkeletonLine({ className }) {
+  return <span className={`sk-bone ${className}`} />
+}
+
 export function CoalIntelligenceWorkbench({ outlook, loading, error, onRetry }) {
   const { demandLab, setQuestionId } = useScenario()
   const questionId = QUESTIONS.some((item) => item.id === demandLab.questionId)
@@ -27,8 +31,34 @@ export function CoalIntelligenceWorkbench({ outlook, loading, error, onRetry }) 
   if (loading) {
     return (
       <section className="sw is-loading" aria-busy="true" aria-label="Данные загружаются">
-        <p className="sw-kicker">Сценарий</p>
-        <span className="sk-line sk-line-kpi-value" />
+        <header className="sw-head">
+          <p className="sw-kicker">Сценарий</p>
+          <div className="sw-questions sw-mode-switch" aria-hidden="true">
+            <span className="sw-q is-skeleton">
+              <SkeletonLine className="ci-skel-copy is-short" />
+            </span>
+            <span className="sw-q is-skeleton">
+              <SkeletonLine className="ci-skel-copy is-short" />
+            </span>
+          </div>
+          <SkeletonLine className="ci-skel-detail-title" />
+        </header>
+        <div className="sw-question-stage">
+          <div className="sw-body is-skeleton">
+            <aside className="sw-control">
+              <SkeletonLine className="ci-skel-kind" />
+              <SkeletonLine className="ci-skel-copy" />
+              <SkeletonLine className="ci-skel-value" />
+              <SkeletonLine className="ci-skel-copy is-short" />
+            </aside>
+            <div className="sw-canvas">
+              <SkeletonLine className="ci-skel-kind" />
+              <SkeletonLine className="ci-skel-hero" />
+              <SkeletonLine className="ci-skel-copy" />
+              <SkeletonLine className="ci-skel-copy is-short" />
+            </div>
+          </div>
+        </div>
       </section>
     )
   }

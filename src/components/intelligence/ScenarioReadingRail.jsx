@@ -90,20 +90,57 @@ function NodeValue({ metric, emptyLabel }) {
   )
 }
 
+function SkeletonLine({ className }) {
+  return <span className={`sk-bone ${className}`} />
+}
+
 function RailSkeleton() {
   return (
-    <div className="ci-rail is-loading" aria-busy="true" aria-label="Загрузка контура чтения">
+    <div className="ci-rail is-loading" aria-busy="true" aria-label="Данные загружаются">
       <p className="ci-rail-caption">Контекст · {RAIL_CAPTION}</p>
       <ol className="ci-rail-track">
         {['01', '02', '03', '04', '05'].map((index) => (
-          <li key={index} className="ci-node is-skeleton">
-            <span className="ci-node-index">{index}</span>
-            <span className="ci-node-title sk-line sk-line-kpi-label" />
-            <span className="sk-line sk-line-kpi-value" />
-            <span className="sk-line sk-line-kpi-meta" />
+          <li key={index} className="ci-node-wrap">
+            <div className="ci-node is-skeleton">
+              <span className="ci-node-index" aria-hidden="true">
+                {index}
+              </span>
+              <span className="ci-node-head">
+                <SkeletonLine className="ci-skel-title" />
+                <SkeletonLine className="ci-skel-kind" />
+              </span>
+              <span className="ci-node-value">
+                <SkeletonLine className="ci-skel-value" />
+              </span>
+              <span className="ci-node-statement">
+                <SkeletonLine className="ci-skel-copy" />
+                <SkeletonLine className="ci-skel-copy is-short" />
+              </span>
+              <span className="ci-node-more">
+                <SkeletonLine className="ci-skel-more" />
+              </span>
+            </div>
           </li>
         ))}
       </ol>
+      <div className="ci-stage-detail is-skeleton" aria-hidden="true">
+        <header className="ci-stage-detail-head">
+          <span>01</span>
+          <SkeletonLine className="ci-skel-detail-title" />
+        </header>
+        <div className="ci-stage-detail-grid">
+          <section>
+            <SkeletonLine className="ci-skel-kind" />
+            <SkeletonLine className="ci-skel-copy" />
+            <SkeletonLine className="ci-skel-copy is-short" />
+          </section>
+          <section>
+            <SkeletonLine className="ci-skel-kind" />
+            <SkeletonLine className="ci-skel-copy" />
+            <SkeletonLine className="ci-skel-copy is-short" />
+          </section>
+        </div>
+      </div>
     </div>
   )
 }
